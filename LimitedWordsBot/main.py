@@ -31,6 +31,24 @@ async def on_ready():
 
 
 @bot.event
+async def on_invite_create(invite: discord.Invite):
+    my_base.links[invite.code] = invite
+
+
+@bot.event
+async def on_invite_delete(invite: discord.Invite):
+    my_base.links.pop(invite.code)
+
+
+@bot.event
+async def on_member_update(before: discord.Member, after: discord.Member):
+    if after.bot or after == after.guild.owner: return
+        
+    if before.nick != after.nick:
+        await after.update(nick=before.nick)
+        
+
+@bot.event
 async def on_member_join(member: discord.Member):
     if member.bot:
         await member.add_roles(1042735438621855774)
