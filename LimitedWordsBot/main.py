@@ -149,7 +149,8 @@ async def word_check(ctx: discord.Message):
 
     await decrease_user_words_to(ctx.author, words)
 
-    await ctx.author.edit(nick = "["+str(words)+"] "+ctx.author.name)
+    await ctx.author.edit(nick="["+str(words)+"] "+ctx.author.name)
+    my_base.member_updates_log.append(ctx.author.id)
 
 
 @bot.command()
