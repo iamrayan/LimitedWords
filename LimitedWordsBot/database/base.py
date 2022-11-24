@@ -16,10 +16,9 @@ class Base:
 
         self.db = firestore.client()
         self.data = {
-            "imnotfunny": {
-                "id": 732876803412328499,
-                "words": 11,
-                'latest daily': int(time.time() - 86401),
+            str(732876803412328499): {
+                "words": float("inf"),
+                'latestdaily': int(time.time() - 86401),
                 'streak': 0
             }
         }
@@ -51,5 +50,5 @@ class Base:
                 doc_ref.set(dat)
     
     def exists(self, user: discord.Member):
-        doc = self.db.collection('users').document(user.name)
+        doc = self.db.collection('users').document(str(user.id))
         return doc.get().exists

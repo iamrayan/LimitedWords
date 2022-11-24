@@ -9,7 +9,7 @@ from wordscurrency.currencycommandscog import CurrencyCommandsCog
 
 
 
-bot = commands.Bot("!", intents=discord.Intents.all())
+bot = commands.Bot("!", intents=discord.Intents.all(), case_insensitive=True)
 
 @bot.event
 async def on_ready():
@@ -47,29 +47,29 @@ async def on_member_join(member: discord.Member):
     exists = my_base.exists(member)
     welcome_channel = bot.get_channel(1039442754926805043)
 
-    new_member_words = random.randint(10, 50)
+    new_member_words = random.randint(50, 150)
+    inviter_words = math.ceil(new_member_words / 2)
 
     if exists:
         message += "Welcome again to Limited Words <@{0}>!\n".format(member.id)
     else:
         await give_user_words(member, new_member_words)
-        await member.edit(nick="["+str(new_member_words)+"] "+member.name)
 
         message += "Welcome to Limited Words <@{0}>! To begin, you are given {1} words!\n".format(member.id, new_member_words)
     
+    if inviter == False:
+        message += "The inviter could not be found"
     if inviter is not None and not exists:
         if inviter == member.guild.owner:
             message += "<@{0}>, the inviter, has also received inf words!".format(inviter.id)
         else:
-            inviter_words = math.ceil(new_member_words / 2)
-
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
 
             message += "<@{0}>, the inviter, has also received {1} words!".format(inviter.id, inviter_words)
         
+    await member.edit(nick="[{0}] {1}".format(str(new_member_words), member.name))
     await welcome_channel.send(message)
-
 
 @bot.command()
 async def Giveallrand(ctx: commands.Context):
@@ -108,7 +108,7 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
     if before.author == bot.user: return
 
     used_words = len(after.clean_content.split(" "))
-    user_words = my_base.data[str(before.author.name)]["words"]
+    user_words = my_base.data[str(before.author.id)]["words"]
 
     words_left = user_words - used_words
 
@@ -126,28 +126,26 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
 @bot.listen("on_message")
 async def word_check(ctx: discord.Message):
-    if ctx.author == bot.user: return
-    if ctx.author == ctx.guild.owner: return
+    if ctx.author.bot or ctx.author.id == ctx.guild.owner.id: return
 
-    words = my_base.data[str(ctx.author.name)]["words"]
+    words = await get_user_words(ctx.author)
 
     used_words = len(ctx.clean_content.split(" "))
 
     words = int(words) - used_words 
 
-    if words < 0:
+    if words <= 0:
         await ctx.delete()
         await ctx.channel.send("You cannot send words more than you have", delete_after=5)
         return
 
-    my_base.data[str(ctx.author.name)]["words"] = words
+    await decrease_user_words_to(ctx.author, words)
 
     await ctx.author.edit(nick = "["+str(words)+"] "+ctx.author.name)
 
-    await decrease_user_words_to(ctx.author, words)
 
 @bot.command()
-async def update_db(ctx: commands.Context):
+async def updatedb(ctx: commands.Context):
     if ctx.author != ctx.guild.owner:
         await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name), delete_after=5)
         return
@@ -155,6 +153,19 @@ async def update_db(ctx: commands.Context):
     my_base.update_now()
 
     await ctx.reply("Database updated with current data.")
+
+
+@bot.command()
+async def stopbot(ctx: commands.Context):
+    if ctx.author != ctx.guild.owner:
+        await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name))
+        return
+
+    my_base.update_now()
+
+    await ctx.reply("101 B0t s10pped 1010010")
+
+    await bot.close()
 
 #Non-Related method
 def get_member(user: discord.User):

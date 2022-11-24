@@ -10,44 +10,43 @@ my_base = base.Base()
 
 async def create_data(user: discord.Member, words: int):
     data = {
-        'id': user.id,
         'words': words,
-        'latest daily': int(time.time() - 86401),
+        'latestdaily': int(time.time() - 86401),
         'streak': 0
     }
 
-    my_base.data[str(user.name)] = data
+    my_base.data[str(user.id)] = data
 
-    my_base.db.collection('users').document(user.name).set(data)
+    my_base.db.collection('users').document(str(user.id)).set(data)
 
     await user.edit(nick="["+str(words)+"] "+user.name)
 
 
 async def update_words(guild: discord.Guild, bot: commands.Bot):
-    for user in guild.members:
-        if user != guild.owner and not user.bot:
-            nick = user.nick
+    for member in guild.members:
+        if member != guild.owner and not member.bot:
+            user_data = my_base.db.collection('users').document(str(member.id)).get()
 
-            if nick is None:
-                await create_data(user, randint(10, 50))
-            
-            words = int(user.nick.split("]")[0].split("[")[1])
+            if not user_data.exists:
+                print("User not logged in discovered!!!")
+            else:
+                dicted = user_data.to_dict()
 
-            my_base.data[str(user.name)] = {
-                'id': user.id,
-                'words': words,
-                'latest daily': int(time.time() - 86401),
-                'streak': 0
-            }
+                print(dicted)
+                my_base.data[str(member.id)] = dicted
+                
+                await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
 
 
 async def give_user_words(user: discord.Member, words: int):
     if my_base.exists(user):
-        user_words = my_base.data[str(user.name)]["words"]
+        if user == user.guild.owner: return
+        
+        user_words = my_base.data[str(user.id)]["words"]
 
         total_words = int(user_words) + int(words)
 
-        my_base.data[str(user.name)]["words"] = total_words
+        my_base.data[str(user.id)]["words"] = total_words
         return total_words
     else:
         await create_data(user, words)
@@ -56,7 +55,11 @@ async def give_user_words(user: discord.Member, words: int):
 
 
 async def decrease_user_words_to(user: discord.Member, words: int):
-    my_base.data[str(user.name)]["words"] = words
+    my_base.data[str(user.id)]["words"] = words
+
+
+async def get_user_words(user: discord.User):
+    return my_base.data[str(user.id)]["words"]
 
 
 async def get_inviter(invites: list[discord.Invite], guild: discord.Guild):
@@ -71,15 +74,15 @@ async def get_inviter(invites: list[discord.Invite], guild: discord.Guild):
 
 
 async def daily_ready(user: discord.User):
-    latest_daily = my_base.data[user.name]['latest daily']
+    latest_daily = my_base.data[str(user.id)]['latestdaily']
 
     current_time = int(time.time())
 
     if (current_time - latest_daily) >= 86400:
-        return my_base.data[user.name]
+        return my_base.data[str(user.id)]
     return False
 
 
 async def redeem_daily(user: discord.User):
-    my_base.data[user.name]["latest daily"] = int(time.time())
-    my_base.data[user.name]["streak"] += 1
+    my_base.data[str(user.id)]["latestdaily"] = int(time.time())
+    my_base.data[str(user.id)]["streak"] += 1
