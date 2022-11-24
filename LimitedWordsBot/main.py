@@ -45,7 +45,7 @@ async def on_member_update(before: discord.Member, after: discord.Member):
     if after.bot or after == after.guild.owner: return
     if before.id in my_base.member_updates_log:
         if before.nick != after.nick:
-            await after.update(nick=before.nick)
+            await after.edit(nick=before.nick)
         
         my_base.member_updates_log.remove(before.id)
         
