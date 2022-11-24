@@ -20,6 +20,7 @@ async def create_data(user: discord.Member, words: int):
     my_base.db.collection('users').document(str(user.id)).set(data)
 
     await user.edit(nick="["+str(words)+"] "+user.name)
+    my_base.member_updates_log.append(user.id)
 
 
 async def update_words(guild: discord.Guild, bot: commands.Bot):
@@ -36,7 +37,6 @@ async def update_words(guild: discord.Guild, bot: commands.Bot):
                 my_base.data[str(member.id)] = dicted
                 
                 await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
-                my_base.member_updates_log.append(member.id)
 
 
 async def give_user_words(user: discord.Member, words: int):

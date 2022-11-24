@@ -31,7 +31,6 @@ class GiveAwayEmbed(Embed):
             total_words = await give_user_words(winner, self.reward)
 
             await winner.edit(nick="["+str(total_words)+"] "+winner.name)
-            my_base.member_updates_log.append(winner.id)
 
             await message.reply("The winner is <@1040533717816459386> !")
 

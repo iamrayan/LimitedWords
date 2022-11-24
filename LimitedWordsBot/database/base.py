@@ -23,7 +23,6 @@ class Base:
             }
         }
         self.links = {}
-        self.member_updates_log = []
 
         thread = Thread(target=self.update_data, daemon=False)
         thread.start()
