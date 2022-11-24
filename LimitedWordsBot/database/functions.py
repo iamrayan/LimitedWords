@@ -36,6 +36,7 @@ async def update_words(guild: discord.Guild, bot: commands.Bot):
                 my_base.data[str(member.id)] = dicted
                 
                 await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
+                my_base.member_updates_log.append(member.id)
 
 
 async def give_user_words(user: discord.Member, words: int):

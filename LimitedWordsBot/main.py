@@ -43,9 +43,11 @@ async def on_invite_delete(invite: discord.Invite):
 @bot.event
 async def on_member_update(before: discord.Member, after: discord.Member):
     if after.bot or after == after.guild.owner: return
+    if before.id in my_base.member_updates_log:
+        if before.nick != after.nick:
+            await after.update(nick=before.nick)
         
-    if before.nick != after.nick:
-        await after.update(nick=before.nick)
+        my_base.member_updates_log.remove(before.id)
         
 
 @bot.event
@@ -83,27 +85,13 @@ async def on_member_join(member: discord.Member):
         else:
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
+            my_base.member_updates_log.append(inviter.id)
 
             message += "<@{0}>, the inviter, has also received {1} words!".format(inviter.id, inviter_words)
         
     await member.edit(nick="[{0}] {1}".format(str(new_member_words), member.name))
+    my_base.member_updates_log.append(member.id)
     await welcome_channel.send(message)
-
-@bot.command()
-async def Giveallrand(ctx: commands.Context):
-    if ctx.author != ctx.guild.owner:
-        await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name), delete_after=5)
-        return
-    
-    users = ctx.guild.members
-
-    for user in users:
-        if user != ctx.guild.owner and user != ctx.me:
-            await user.edit(nick="["+str(random.randint(10, 50))+"] "+user.name)
-
-    await update_words(bot.get_guild(1039438917105102848), bot)
-    
-    await ctx.send("Everyone has been given a random number of words")
 
 
 @bot.command()
@@ -115,6 +103,7 @@ async def Givewords(ctx: commands.Context, user: discord.Member, words: int):
     total_words = await give_user_words(user, words)
 
     await user.edit(nick="["+str(total_words)+"] "+user.name)
+    my_base.member_updates_log.append(user.id)
 
     await ctx.send("Words given to {0}: {1}".format(user.name, words))
     await ctx.send("Current words of {0}: {1}".format(user.name, total_words))
@@ -137,7 +126,8 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
     my_base.data[str(before.author.name)]["words"] = words_left
 
-    await before.author.edit(nick = "["+str(words_left)+"] "+before.author.name)
+    await before.author.edit(nick="["+str(words_left)+"] "+before.author.name)
+    my_base.member_updates_log.append(before.author.id)
 
     await decrease_user_words_to(before.author, words_left)
     
