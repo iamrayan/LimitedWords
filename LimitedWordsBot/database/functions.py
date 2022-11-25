@@ -1,7 +1,6 @@
 from . import base
 import discord
 from discord.ext import commands
-from random import randint
 import time
 
 
