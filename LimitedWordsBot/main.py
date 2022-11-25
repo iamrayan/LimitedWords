@@ -148,7 +148,7 @@ async def word_check(ctx: discord.Message):
 
     words = int(words) - used_words 
 
-    if words <= 0:
+    if words < 0:
         await ctx.delete()
         await ctx.channel.send("You cannot send words more than you have", delete_after=5)
         return
