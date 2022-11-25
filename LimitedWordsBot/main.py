@@ -9,7 +9,16 @@ from wordscurrency.currencycommandscog import CurrencyCommandsCog
 
 
 
-bot = commands.Bot("!", intents=discord.Intents.all(), case_insensitive=True)
+bot = commands.Bot("!", intents=discord.Intents.all(), case_insensitive=True, help_command=None)
+
+help_commands = {
+    "prefix": "`!`",
+    "help": "`Shows this commands`",
+    "daily": "`You can run this command once in 24 hours. If you don't do it within 48 hours, your current streak will be gone`",
+    "monke (words)": "`Gamble up some words to see if monke gives you double the words or none`"
+}
+
+
 
 @bot.event
 async def on_ready():
@@ -80,6 +89,17 @@ async def on_member_join(member: discord.Member):
         
     await member.edit(nick="[{0}] {1}".format(str(new_member_words), member.name))
     await welcome_channel.send(message)
+
+
+@bot.command()
+async def help(ctx: commands.Context):
+    help_embed = discord.Embed(title="List of Commands", colour=discord.Colour.random())
+    help_embed.description = "Here are the list of available commands in this bot"
+
+    for com, des in help_commands.items():
+        help_embed.add_field(name=com, value=des, inline=False)
+
+    await ctx.send(embed=help_embed)
 
 
 @bot.command()
