@@ -18,7 +18,13 @@ class GiveAwayCog(commands.Cog):
             await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name), delete_after=5)
             return
         
-        readable_time = time.strftime("%H:%M:%S", time.gmtime(minutes*60))       
+        seconds = minutes * 60
+
+        if seconds < 86400:
+            readable_time = time.strftime("%H:%M:%S", time.gmtime(minutes*60))
+        else:
+            readable_time = time.strftime("%d days %H:%M:%S", time.gmtime(minutes*60))
+        
         id = register_id()
         view = GiveAwayView(id)
         giveaway = GiveAwayEmbed(view, self.bot, reward_words, readable_time, minutes*60)
