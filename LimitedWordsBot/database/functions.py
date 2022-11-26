@@ -19,7 +19,6 @@ async def create_data(user: discord.Member, words: int):
     my_base.db.collection('users').document(str(user.id)).set(data)
 
     await user.edit(nick="["+str(words)+"] "+user.name)
-    my_base.member_updates_log.append(user.id)
 
 
 async def update_words(guild: discord.Guild, bot: commands.Bot):
