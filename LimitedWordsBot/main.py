@@ -131,10 +131,7 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
         await before.channel.send("You cannot edit/send words more than you have", delete_after=5)
         return
 
-    my_base.data[str(before.author.name)]["words"] = words_left
-
     await before.author.edit(nick="["+str(words_left)+"] "+before.author.name)
-
     await decrease_user_words_to(before.author, words_left)
     
 

@@ -43,7 +43,7 @@ class CurrencyCommandsCog(commands.Cog):
     async def monke(self, ctx: commands.Context, words):
         cooldown_user = self.cooldowns.get(str(ctx.author.id))
         if cooldown_user != None:
-            if time.time() - cooldown_user > 60:
+            if cooldown_user - time.time() < 0:
                 self.cooldowns.pop(str(ctx.author.id))
             else:
                 await ctx.reply("You need to wait {} more seconds to use this command".format(int(cooldown_user - time.time())))
