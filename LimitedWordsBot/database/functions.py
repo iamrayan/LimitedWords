@@ -77,8 +77,13 @@ async def daily_ready(user: discord.User):
 
     current_time = int(time.time())
 
-    if (current_time - latest_daily) >= 86400:
+    if current_time - latest_daily >= 172800:
+        my_base.data[str(user.id)]["streak"] = 0
         return my_base.data[str(user.id)]
+    
+    if current_time - latest_daily >= 86400:
+        return my_base.data[str(user.id)]
+        
     return False
 
 
