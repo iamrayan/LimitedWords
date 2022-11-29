@@ -14,6 +14,8 @@ class CurrencyCommandsCog(commands.Cog):
     
     @commands.command()
     async def daily(self, ctx: commands.Context):
+        if ctx.author in my_base.prisoners.keys(): return
+
         ready = await daily_ready(ctx.author)
 
         embed = Embed(title="{}'s daily".format(ctx.author.name), colour=Colour.green())
@@ -41,6 +43,8 @@ class CurrencyCommandsCog(commands.Cog):
 
     @commands.command()
     async def monke(self, ctx: commands.Context, words):
+        if ctx.author in my_base.prisoners.keys(): return
+
         cooldown_user = self.cooldowns.get(str(ctx.author.id))
         if cooldown_user != None:
             if cooldown_user - time.time() < 0:
