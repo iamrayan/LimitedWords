@@ -67,6 +67,14 @@ class Base:
                 doc_ref.update(dat)
             else:
                 doc_ref.set(dat)
+        
+        for prisoner, data in self.prisoners.items():
+                doc_ref = self.db.collections('prisoners').document(prisoner.id)
+
+                if doc_ref.get().exists:
+                    doc_ref.update(data)
+                else:
+                    doc_ref.set(data)
     
     def exists(self, user: discord.Member):
         doc = self.db.collection('users').document(str(user.id))
