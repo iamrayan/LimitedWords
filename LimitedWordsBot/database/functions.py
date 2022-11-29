@@ -85,3 +85,10 @@ async def daily_ready(user: discord.User):
 async def redeem_daily(user: discord.User):
     my_base.data[str(user.id)]["latestdaily"] = int(time.time())
     my_base.data[str(user.id)]["streak"] += 1
+
+
+async def add_prisoner(user: discord.Member, reason: str, time: int):
+    my_base.prisoners[user] = {
+        "reason": reason,
+        "time": time
+    }

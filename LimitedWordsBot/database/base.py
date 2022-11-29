@@ -1,8 +1,9 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 from time import sleep
-from threading import Thread
+import asyncio
 import discord
+from discord.ext import commands
 import time
 
 
@@ -23,12 +24,13 @@ class Base:
             }
         }
         self.links = {}
+        self.prisoners = {}
 
-        thread = Thread(target=self.update_data, daemon=False)
-        thread.start()
+        asyncio.run(self.update_data())
+        asyncio.run(self.prison_check())
         
     
-    def update_data(self):
+    async def update_data(self):
         while True:
             for doc, dat in self.data.items():
                 doc_ref = self.db.collection('users').document(doc)
@@ -38,7 +40,16 @@ class Base:
                 else:
                     doc_ref.set(dat)
         
-            sleep(600)
+            await asyncio.sleep(600)
+    
+    async def prison_check(self):
+        await asyncio.sleep(60)
+
+        for prisoner, data in self.prisoners.items():
+            if data["time"] >= time.time():
+                await prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168))
+
+                del self.prisoners[prisoner]
     
     def update_now(self):
         for doc, dat in self.data.items():
