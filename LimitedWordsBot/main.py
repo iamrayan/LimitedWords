@@ -6,6 +6,8 @@ import math
 from autorolecog import AutoRoleCog
 from giveaway.giveawaycog import GiveAwayCog
 from wordscurrency.currencycommandscog import CurrencyCommandsCog
+from admincog import AdminCog
+from generalcog import GeneralCog
 
 
 
@@ -18,6 +20,7 @@ help_commands = {
     "monke (words)": "`Gamble up some words to see if monke gives you double the words or none`"
 }
 
+prison_chat_id = 1046101755999563887
 
 
 @bot.event
@@ -32,6 +35,8 @@ async def on_ready():
     await bot.add_cog(AutoRoleCog(bot))
     await bot.add_cog(GiveAwayCog(bot))
     await bot.add_cog(CurrencyCommandsCog(bot))
+    await bot.add_cog(AdminCog(bot))
+    await bot.add_cog(GeneralCog(bot, help_commands))
 
     print(my_base.data)
     print(my_base.links)
@@ -91,33 +96,9 @@ async def on_member_join(member: discord.Member):
     await welcome_channel.send(message)
 
 
-@bot.command()
-async def help(ctx: commands.Context):
-    help_embed = discord.Embed(title="List of Commands", colour=discord.Colour.random())
-    help_embed.description = "Here are the list of available commands in this bot"
-
-    for com, des in help_commands.items():
-        help_embed.add_field(name=com, value=des, inline=False)
-
-    await ctx.send(embed=help_embed)
-
-
-@bot.command()
-async def Givewords(ctx: commands.Context, user: discord.Member, words: int):
-    if ctx.author != ctx.guild.owner:
-        await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name), delete_after=5)
-        return
-
-    total_words = await give_user_words(user, words)
-
-    await user.edit(nick="["+str(total_words)+"] "+user.name)
-
-    await ctx.send("Words given to {0}: {1}".format(user.name, words))
-    await ctx.send("Current words of {0}: {1}".format(user.name, total_words))
-
-
 @bot.event
 async def on_message_edit(before: discord.Message, after: discord.Message):
+    if before.author in my_base.prisoners.keys(): return
     if before.author == before.guild.owner: return
     if before.author == bot.user: return
 
@@ -125,6 +106,13 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
     user_words = my_base.data[str(before.author.id)]["words"]
 
     words_left = user_words - used_words
+
+    if words_left == 0:
+        await after.delete()
+        await add_prisoner(before.author, "out of words", time=time.time()+86400)
+        await before.author.edit(nick=f"[prisoner] {before.author.name}")
+
+        return
 
     if words_left < 0:
         await after.delete()
@@ -137,13 +125,22 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
 @bot.listen("on_message")
 async def word_check(ctx: discord.Message):
-    if ctx.author.bot or ctx.author.id == ctx.guild.owner.id: return
+    if ctx.author in my_base.prisoners.keys(): return
+    if ctx.author.bot or ctx.author.id == ctx.guild.owner.id or ctx.channel.id == prison_chat_id: 
+        return
 
     words = await get_user_words(ctx.author)
 
     used_words = len(ctx.clean_content.split(" "))
 
     words = int(words) - used_words 
+
+    if words == 0:
+        await ctx.delete()
+        await add_prisoner(ctx.author, "out of words", time=time.time()+86400)
+        await ctx.author.edit(nick=f"[prisoner] {ctx.author.name}")
+
+        return
 
     if words < 0:
         await ctx.delete()
@@ -153,35 +150,6 @@ async def word_check(ctx: discord.Message):
     await decrease_user_words_to(ctx.author, words)
 
     await ctx.author.edit(nick="["+str(words)+"] "+ctx.author.name)
-
-
-@bot.command()
-async def updatedb(ctx: commands.Context):
-    if ctx.author != ctx.guild.owner:
-        await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name), delete_after=5)
-        return
-
-    my_base.update_now()
-
-    await ctx.reply("Database updated with current data.")
-
-
-@bot.command()
-async def stopbot(ctx: commands.Context):
-    if ctx.author != ctx.guild.owner:
-        await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name))
-        return
-
-    my_base.update_now()
-
-    await ctx.reply("101 B0t s10pped 1010010")
-
-    await bot.close()
-
-#Non-Related method
-def get_member(user: discord.User):
-    return bot.get_guild(1039438917105102848).get_member(user.id)
-
 
 
 bot.run("MTAzOTQ2OTYwMTUzODQ0MTIyNg.Gzup3-.42vttlpEuxugGpZTXSpLtK8s92aFDy6fslPI-g")
