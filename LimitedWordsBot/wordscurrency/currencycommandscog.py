@@ -52,6 +52,10 @@ class CurrencyCommandsCog(commands.Cog):
             else:
                 await ctx.reply("You need to wait {} more seconds to use this command".format(int(cooldown_user - time.time())))
                 return
+        
+        if words > 100:
+            await ctx.reply("The max bet limited is 100")
+            return
 
         if len(ctx.message.clean_content.split(" ")) + int(words) > await get_user_words(ctx.author):
             await ctx.reply("You dont have enough words")
