@@ -5,6 +5,7 @@ from discord.ext import commands
 from .giveawayembed import GiveAwayEmbed
 from registerid.getid import *
 from .giveawayview import GiveAwayView
+from termcolor import colored
 
 
 class GiveAwayCog(commands.Cog):
@@ -31,3 +32,5 @@ class GiveAwayCog(commands.Cog):
 
         message = await ctx.send(content="<@&1041653671357849650>", embed=giveaway, view=view)
         await giveaway.start(id, message)
+
+        print(colored("Admin: ", "blue") + colored("Give Away created!", "green"))

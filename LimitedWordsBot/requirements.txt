@@ -1,2 +1,3 @@
 discord.py
 firebase_admin
+termcolor

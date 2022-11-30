@@ -4,6 +4,7 @@ from database.functions import *
 from .monkeembed import MonkeEmbed
 from random import randint, choice
 import time
+from termcolor import colored
 
 
 class CurrencyCommandsCog(commands.Cog):
@@ -39,6 +40,8 @@ class CurrencyCommandsCog(commands.Cog):
         
 
         await ctx.send(embed=embed)
+
+        print(colored("Command: ", "blue") + colored("Daily command called!", "green"))
     
 
     @commands.command()
@@ -97,3 +100,5 @@ class CurrencyCommandsCog(commands.Cog):
             await ctx.author.edit(nick="["+str(total_words)+"] "+ctx.author.name)
         
         self.cooldowns[str(ctx.author.id)] = time.time()+60
+
+        print(colored("Command: ", "blue") + colored("Monke command called!", "green"))

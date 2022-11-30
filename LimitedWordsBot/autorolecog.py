@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from termcolor import colored
 
 
 class AutoRoleCog(commands.Cog):
@@ -18,6 +19,8 @@ class AutoRoleCog(commands.Cog):
             guild = self.bot.get_guild(1039438917105102848)
             role = guild.get_role(self.reaction_roles[payload.emoji.name])
             await guild.get_member(payload.user_id).add_roles(role)
+
+        print(colored("Reaction: ", "blue") + colored("Reaction reacted!", "green"))
     
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent):
@@ -25,3 +28,5 @@ class AutoRoleCog(commands.Cog):
             guild = self.bot.get_guild(1039438917105102848)
             role = guild.get_role(self.reaction_roles[payload.emoji.name])
             await guild.get_member(payload.user_id).remove_roles(role)
+        
+        print(colored("Reaction: ", "blue") + colored("Reaction unreacted!", "green"))
