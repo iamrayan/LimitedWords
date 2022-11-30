@@ -8,6 +8,7 @@ from giveaway.giveawaycog import GiveAwayCog
 from wordscurrency.currencycommandscog import CurrencyCommandsCog
 from admincog import AdminCog
 from generalcog import GeneralCog
+from termcolor import colored
 
 
 
@@ -38,20 +39,20 @@ async def on_ready():
     await bot.add_cog(AdminCog(bot))
     await bot.add_cog(GeneralCog(bot, help_commands))
 
-    print(my_base.data)
-    print(my_base.links)
-
-    print("Connected")
+    print(colored("System: ", "blue") + colored("Bot is Online!", "green"))
 
 
 @bot.event
 async def on_invite_create(invite: discord.Invite):
     my_base.links[invite.code] = invite
 
+    print(colored("Dizzy: ", "blue") + colored("Invite link created!", "green"))
+
 
 @bot.event
 async def on_invite_delete(invite: discord.Invite):
     my_base.links.pop(invite.code)
+    print(colored("Dizzy: ", "blue") + colored("Invite link deleted!", "green"))
 
 
 @bot.event
@@ -95,6 +96,8 @@ async def on_member_join(member: discord.Member):
     await member.edit(nick="[{0}] {1}".format(str(new_member_words), member.name))
     await welcome_channel.send(message)
 
+    print(colored("Dizzy: ", "blue") + colored("New Member joined!", "green"))
+
 
 @bot.event
 async def on_message_edit(before: discord.Message, after: discord.Message):
@@ -121,6 +124,8 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
     await before.author.edit(nick="["+str(words_left)+"] "+before.author.name)
     await decrease_user_words_to(before.author, words_left)
+
+    print(colored("Dizzy: ", "blue") + colored("Message edited!", "green"))
     
 
 @bot.listen("on_message")
@@ -150,6 +155,8 @@ async def word_check(ctx: discord.Message):
     await decrease_user_words_to(ctx.author, words)
 
     await ctx.author.edit(nick="["+str(words)+"] "+ctx.author.name)
+
+    print(colored("Dizzy: ", "blue") + colored("New message sent!", "green"))
 
 
 bot.run("MTAzOTQ2OTYwMTUzODQ0MTIyNg.Gzup3-.42vttlpEuxugGpZTXSpLtK8s92aFDy6fslPI-g")

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from database.functions import *
+from termcolor import colored
 
 
 class GeneralCog(commands.Cog):
@@ -20,3 +21,5 @@ class GeneralCog(commands.Cog):
             help_embed.add_field(name=com, value=des, inline=False)
 
         await ctx.send(embed=help_embed)
+
+        print(colored("Command: ", "blue") + colored("Help command called!", "green"))

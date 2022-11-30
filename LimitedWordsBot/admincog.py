@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from database.functions import *
+from termcolor import colored
 
 
 class AdminCog(commands.Cog):
@@ -19,6 +20,8 @@ class AdminCog(commands.Cog):
 
         await ctx.send("Words given to {0}: {1}".format(user.name, words))
         await ctx.send("Current words of {0}: {1}".format(user.name, total_words))
+
+        print(colored("Admin: ", "blue") + colored("Givewords called!", "green"))
     
 
     @commands.command()
@@ -30,6 +33,8 @@ class AdminCog(commands.Cog):
         my_base.update_now()
 
         await ctx.reply("Database updated with current data.")
+
+        print(colored("Admin: ", "blue") + colored("Database updated!", "green"))
 
 
     @commands.command()
@@ -43,3 +48,5 @@ class AdminCog(commands.Cog):
         await ctx.reply("101 B0t s10pped 1010010")
 
         await self.bot.close()
+
+        print(colored("System: ", "blue") + colored("Bot Stopped!", "green"))
