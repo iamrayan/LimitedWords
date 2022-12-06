@@ -1,0 +1,5 @@
+FROM python:3.10
+COPY requirements.txt /main/
+RUN pip install requirements.txt
+COPY . /main
+CMD python main.py
