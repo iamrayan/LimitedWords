@@ -45,7 +45,6 @@ async def on_ready():
 @bot.event
 async def on_invite_create(invite: discord.Invite):
     my_base.links[invite.code] = invite
-
     print(colored("Dizzy: ", "blue") + colored("Invite link created!", "green"))
 
 
