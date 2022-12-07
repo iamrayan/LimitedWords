@@ -10,7 +10,7 @@ from admincog import AdminCog
 from generalcog import GeneralCog
 from termcolor import colored
 
-print("atleast work")
+print("atleast  work")
 
 bot = commands.Bot("!", intents=discord.Intents.all(), case_insensitive=True, help_command=None)
 
