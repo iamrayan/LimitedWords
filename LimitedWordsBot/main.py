@@ -9,6 +9,7 @@ from wordscurrency.currencycommandscog import CurrencyCommandsCog
 from admincog import AdminCog
 from generalcog import GeneralCog
 from termcolor import colored
+import os
 
 print("atleast  work")
 
@@ -158,4 +159,4 @@ async def word_check(ctx: discord.Message):
     print(colored("Dizzy: ", "blue") + colored("New message sent!", "green"))
 
 
-bot.run("MTAzOTQ2OTYwMTUzODQ0MTIyNg.Gzup3-.42vttlpEuxugGpZTXSpLtK8s92aFDy6fslPI-g")
+bot.run(os.environ.get("TOKEN"))
