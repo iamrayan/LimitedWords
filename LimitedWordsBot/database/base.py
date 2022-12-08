@@ -3,12 +3,12 @@ from firebase_admin import credentials, firestore
 from time import sleep
 import asyncio
 import discord
-from discord.ext import commands
-import time
+from time import sleep, time
+from threading import Thread
 
 class Base:
     def __init__(self):
-        cred = credentials.Certificate("database/serviceAccountKey.json")
+        cred = credentials.Certificate("LimitedWordsBot/database/serviceAccountKey.json")
         try:
             firebase_admin.initialize_app(cred)
         except:
@@ -18,19 +18,21 @@ class Base:
         self.data = {
             str(732876803412328499): {
                 "words": float("inf"),
-                'latestdaily': int(time.time() - 86401),
+                'latestdaily': int(time() - 86401),
                 'streak': 0
             }
         }
         self.links = {}
         self.prisoners = {}
 
-        asyncio.run(self.update_data())
-        asyncio.run(self.prison_check())
+        Thread(target=self.update_data).start()
+        Thread(target=self.prison_check).start()
         
     
-    async def update_data(self):
+    def update_data(self):
         while True:
+            sleep(300)
+
             for doc, dat in self.data.items():
                 doc_ref = self.db.collection('users').document(doc)
                 
@@ -46,16 +48,14 @@ class Base:
                     doc_ref.update(data)
                 else:
                     doc_ref.set(data)
-            
-            await asyncio.sleep(600)
     
-    async def prison_check(self):
+    def prison_check(self):
         while True:
-            await asyncio.sleep(60)
+            sleep(60)
 
             for prisoner, data in self.prisoners.items():
-                if data["time"] >= time.time():
-                    await prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168))
+                if data["time"] >= time():
+                    asyncio.run(prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168)))
 
                     del self.prisoners[prisoner]
     
