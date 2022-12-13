@@ -57,7 +57,7 @@ async def on_invite_delete(invite: discord.Invite):
 @bot.event
 async def on_member_join(member: discord.Member):
     if member.bot:
-        await member.add_roles(1042735438621855774)
+        await member.add_roles(member.guild.get_role(1042735438621855774))
         await member.edit(nick="[inf] "+member.name)
         return
 
