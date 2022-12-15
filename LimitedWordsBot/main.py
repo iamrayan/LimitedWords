@@ -11,6 +11,7 @@ from monkeembed import MonkeEmbed
 from random import choice, randint
 
 
+
 cooldowns = {}
 
 bot = commands.Bot("!", intents=discord.Intents.all(), case_insensitive=True, help_command=None)
