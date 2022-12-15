@@ -62,7 +62,7 @@ async def get_user_words(user: discord.User):
     return my_base.data[str(user.id)]["words"]
 
 
-async def get_inviter(invites: list[discord.Invite], guild: discord.Guild):
+async def get_inviter(invites, guild):
     for invite in invites:
         invite_link = my_base.links.get(invite.code)
 
