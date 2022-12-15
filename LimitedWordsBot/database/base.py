@@ -15,13 +15,7 @@ class Base:
             firebase_admin.get_app()
 
         self.db = firestore.client()
-        self.data = {
-            str(732876803412328499): {
-                "words": float("inf"),
-                'latestdaily': int(time() - 86401),
-                'streak': 0
-            }
-        }
+        self.data = {}
         self.links = {}
         self.prisoners = {}
 

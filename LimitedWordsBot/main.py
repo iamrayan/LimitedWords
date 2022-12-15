@@ -5,12 +5,13 @@ from database.functions import *
 import math
 from autorolecog import AutoRoleCog
 from giveaway.giveawaycog import GiveAwayCog
-from wordscurrency.currencycommandscog import CurrencyCommandsCog
 from admincog import AdminCog
-from generalcog import GeneralCog
 from termcolor import colored
+from monkeembed import MonkeEmbed
+from random import choice, randint
 
-print("atleast  work")
+
+cooldowns = {}
 
 bot = commands.Bot("!", intents=discord.Intents.all(), case_insensitive=True, help_command=None)
 
@@ -35,11 +36,116 @@ async def on_ready():
 
     await bot.add_cog(AutoRoleCog(bot))
     await bot.add_cog(GiveAwayCog(bot))
-    await bot.add_cog(CurrencyCommandsCog(bot))
     await bot.add_cog(AdminCog(bot))
-    await bot.add_cog(GeneralCog(bot, help_commands))
+    await bot.tree.sync()
 
     print(colored("System: ", "blue") + colored("Bot is Online!", "green"))
+
+
+@bot.tree.command(name="daily", description="Claim your daily!")
+async def daily(interaction: discord.Interaction):
+    if interaction.user in my_base.prisoners.keys(): return
+
+    ready = await daily_ready(interaction.user)
+
+    embed = discord.Embed(title="{}'s daily".format(interaction.user.name), colour=discord.Colour.green())
+
+    if not ready:
+        embed.description = "You have already claimed your daily!"
+        embed.set_footer(text="Come back soon for your daily")
+    else:
+        reward = 50 + ready["streak"] * 20
+
+        embed.description = "Your daily has been redeemed!"
+        embed.add_field(name="Reward", value=str(reward))
+        embed.add_field(name="Streak", value=ready["streak"])
+        embed.set_footer(text="You can redeem again in 24 hours!")
+
+        total_words = await give_user_words(interaction.user, reward)
+
+        await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
+
+        await redeem_daily(interaction.user)
+        
+
+    await interaction.response.send_message(embed=embed)
+
+    print(colored("Command: ", "blue") + colored("Daily command called!", "green"))
+
+
+@bot.tree.command(name="monke", description="Gamble away your coins!")
+async def monke(interaction: discord.Interaction, words: int):
+    if interaction.user in my_base.prisoners.keys(): return
+
+    cooldown_user = cooldowns.get(str(interaction.user.id))
+    if cooldown_user != None:
+        if cooldown_user - time.time() < 0:
+            cooldowns.pop(str(interaction.user.id))
+        else:
+            await interaction.response.send_message("You need to wait {} more seconds to use this command".format(int(cooldown_user - time.time())))
+            return
+        
+    if words > 100:
+        await interaction.response.send_message("The max bet limited is 100")
+        return
+
+    if int(words) > await get_user_words(interaction.user):
+        await interaction.response.send_message("You dont have enough words")
+        return
+
+    words_converted = None
+    try:
+        words_converted = int(words)
+    except:
+        await interaction.response.send_message("Word amount should be a number")
+        return
+        
+    chance = randint(0, 100)
+
+    if chance <= 65:
+        decisions = [
+            "Monke wanted a vacation so badly that he took your words",
+            "Monke sent his kids but that naught little monke's decided to steal it",
+            "Monke was too cute that you accidently tripped and sent your word's flying off to monke's pocket",
+            "You decide to steal his words but you failed and monke stole your words"
+        ]
+
+        await interaction.response.send_message(embed=MonkeEmbed(choice(decisions), words_converted, 0))
+
+        total_words = await give_user_words(interaction.user, words_converted * (-1))
+
+        await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
+    else:
+        decisions = [
+            "Monke decided to be nice for once and gave you double words",
+            "Monke repaid you double words for buying him candy",
+            "Both of you decided to make a rap battle and you won. He gave you double amount the words"
+        ]
+
+        await interaction.response.send_message(embed=MonkeEmbed(choice(decisions), words_converted, words_converted * 2))
+
+        total_words = await give_user_words(interaction.user, words_converted*2)
+
+        await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
+        
+    cooldowns[str(interaction.user.id)] = time.time()+60
+
+    print(colored("Command: ", "blue") + colored("Monke command called!", "green"))
+
+
+@bot.tree.command(name="help", description="List of all the commands")
+async def help(interaction: discord.Interaction):
+    if interaction.user in my_base.prisoners.keys(): return
+
+    help_embed = discord.Embed(title="List of Commands", colour=discord.Colour.random())
+    help_embed.description = "Here are the list of available commands in this bot"
+
+    for com, des in help_commands.items():
+         help_embed.add_field(name=com, value=des, inline=False)
+
+    await interaction.response.send_message(embed=help_embed)
+
+    print(colored("Command: ", "blue") + colored("Help command called!", "green"))
 
 
 @bot.event

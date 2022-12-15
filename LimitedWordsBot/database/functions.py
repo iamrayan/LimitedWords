@@ -11,6 +11,7 @@ async def create_data(user: discord.Member, words: int):
     data = {
         'words': words,
         'latestdaily': int(time.time() - 86401),
+        'warnings': 0,
         'streak': 0
     }
 
