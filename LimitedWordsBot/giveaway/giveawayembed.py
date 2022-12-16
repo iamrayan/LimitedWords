@@ -6,6 +6,7 @@ import asyncio
 from registerid.getid import *
 import time
 from .giveawayview import GiveAwayView
+from math import floor
 
 
 class GiveAwayEmbed(Embed):
@@ -19,12 +20,12 @@ class GiveAwayEmbed(Embed):
         self.reward = reward
 
         self.description = "**A give away being hosted! Click the button below the message to enter in the give away!**"
-        self.add_field(name="Time:", value=f"<t:{time.time() + self.giveaway_time}:R>", inline=False)
+        self.add_field(name="Time:", value=f"<t:{floor(time.time() + self.giveaway_time)}:R>", inline=False)
         self.add_field(name="Reward:", value=f"`{reward} words`", inline=False)
-        self.add_field(name="Winners:", value=on_going, inline=False)
+        self.add_field(name="Winners:", value=f"`{on_going}`", inline=False)
     
     async def start(self, id, message: discord.Message):
-        await asyncio.sleep(self.time)
+        await asyncio.sleep(self.giveaway_time)
         
         winner_message = ""
 

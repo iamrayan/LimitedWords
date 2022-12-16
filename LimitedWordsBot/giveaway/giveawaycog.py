@@ -19,13 +19,13 @@ class GiveAwayCog(commands.Cog):
             await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name), delete_after=5)
             return
         
-        seconds = minutes * 60
-        
         id = register_id()
         view = GiveAwayView(id)
         giveaway = GiveAwayEmbed(view, self.bot, reward_words, minutes*60)
 
         message = await ctx.send(content="<@&1041653671357849650>", embed=giveaway, view=view)
         await giveaway.start(id, message)
+
+        await ctx.message.delete()
 
         print(colored("Admin: ", "blue") + colored("Give Away created!", "green"))
