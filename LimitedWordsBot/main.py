@@ -16,7 +16,6 @@ cooldowns = {}
 bot = commands.Bot("!", intents=discord.Intents.all(), case_insensitive=True, help_command=None)
 
 help_commands = {
-    "prefix": "`!`",
     "help": "`Shows this commands`",
     "daily": "`You can run this command once in 24 hours. If you don't do it within 48 hours, your current streak will be gone`",
     "monke (words)": "`Gamble up some words to see if monke gives you double the words or none`"
@@ -178,27 +177,31 @@ async def on_member_join(member: discord.Member):
     welcome_channel = bot.get_channel(1039442754926805043)
 
     new_member_words = random.randint(50, 150)
-    inviter_words = math.ceil(new_member_words / 2)
+    
 
     if exists:
-        message += "Welcome again to Limited Words <@{0}>!\n".format(member.id)
+        message += f"**Welcome our member *<@{member.id}>!***\n\n- Since you have already began, you will be continuing with your latest word amount.\n\n"
     else:
         await give_user_words(member, new_member_words)
+        message += f"**Welcome our newest member *<@{member.id}>!***\n\n"
+        message += f"- To begin you are given *{new_member_words}* words\n"
 
-        message += "Welcome to Limited Words <@{0}>! To begin, you are given {1} words!\n".format(member.id, new_member_words)
-    
     if inviter == False:
-        message += "The inviter could not be found"
+        message += "- Sadly, the inviter could not be found\n\n"
     if inviter is not None and not exists:
+        inviter_words = math.ceil(new_member_words / 2)
+
         if inviter == member.guild.owner:
-            message += "<@{0}>, the inviter, has also received inf words!".format(inviter.id)
+            message += f"- The inviter, *<@{member.id}>* has also received *inf* words\n\n"
         else:
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
 
-            message += "<@{0}>, the inviter, has also received {1} words!".format(inviter.id, inviter_words)
+            message += f"- The inviter, *<@{member.id}>* has also received *{inviter_words}* words\n\n"
         
     await member.edit(nick="[{0}] {1}".format(str(new_member_words), member.name))
+
+    message += "*Make sure you enjoy!*"
     await welcome_channel.send(message)
 
     print(colored("Dizzy: ", "blue") + colored("New Member joined!", "green"))
