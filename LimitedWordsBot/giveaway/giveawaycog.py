@@ -20,15 +20,10 @@ class GiveAwayCog(commands.Cog):
             return
         
         seconds = minutes * 60
-
-        if seconds < 86400:
-            readable_time = time.strftime("%H:%M:%S", time.gmtime(minutes*60))
-        else:
-            readable_time = time.strftime("%d days %H:%M:%S", time.gmtime(minutes*60))
         
         id = register_id()
         view = GiveAwayView(id)
-        giveaway = GiveAwayEmbed(view, self.bot, reward_words, readable_time, minutes*60)
+        giveaway = GiveAwayEmbed(view, self.bot, reward_words, minutes*60)
 
         message = await ctx.send(content="<@&1041653671357849650>", embed=giveaway, view=view)
         await giveaway.start(id, message)
