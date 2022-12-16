@@ -19,7 +19,7 @@ class GiveAwayEmbed(Embed):
         self.reward = reward
 
         self.description = "**A give away being hosted! Click the button below the message to enter in the give away!**"
-        self.add_field(name="Time:", value=f"`<t:{time.time() + self.giveaway_time}:R>`", inline=False)
+        self.add_field(name="Time:", value=f"<t:{time.time() + self.giveaway_time}:R>", inline=False)
         self.add_field(name="Reward:", value=f"`{reward} words`", inline=False)
         self.add_field(name="Winners:", value=on_going, inline=False)
     
