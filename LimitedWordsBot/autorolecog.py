@@ -16,6 +16,9 @@ class AutoRoleCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        if self.bot.get_user(payload.user_id).bot:
+            return
+
         if payload.message_id == 1041652654037811200:
             guild = self.bot.get_guild(1039438917105102848)
             role = guild.get_role(self.reaction_roles[payload.emoji.name])
