@@ -239,6 +239,9 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 @bot.listen("on_message")
 async def word_check(ctx: discord.Message):
     if ctx.author in my_base.prisoners.keys(): return
+    if ctx.channel.id == 1053640012924731442:
+        await ctx.add_reaction("✅")
+        await ctx.add_reaction("❌")
     if ctx.author.bot or ctx.author.id == ctx.guild.owner.id or ctx.channel.id == prison_chat_id: 
         return
 
