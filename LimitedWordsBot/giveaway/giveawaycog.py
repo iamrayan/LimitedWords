@@ -1,9 +1,5 @@
-import time
-from discord import ButtonStyle, PartialEmoji, Interaction
-from discord.ui import Button, View
 from discord.ext import commands
 from .giveawayembed import GiveAwayEmbed
-from registerid.getid import *
 from .giveawayview import GiveAwayView
 from termcolor import colored
 
@@ -19,8 +15,7 @@ class GiveAwayCog(commands.Cog):
             await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name), delete_after=5)
             return
         
-        id = register_id()
-        view = GiveAwayView(id)
+        view = GiveAwayView()
         giveaway = GiveAwayEmbed(view, self.bot, reward_words, minutes*60)
 
         message = await ctx.send(content="<@&1041653671357849650>", embed=giveaway, view=view)
