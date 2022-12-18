@@ -19,7 +19,7 @@ class GiveAwayCog(commands.Cog):
         giveaway = GiveAwayEmbed(view, self.bot, reward_words, minutes*60)
 
         message = await ctx.send(content="<@&1041653671357849650>", embed=giveaway, view=view)
-        await giveaway.start(id, message)
+        await giveaway.start(message)
 
         await ctx.message.delete()
 
