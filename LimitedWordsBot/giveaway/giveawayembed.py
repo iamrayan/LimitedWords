@@ -24,7 +24,7 @@ class GiveAwayEmbed(Embed):
         self.add_field(name="Reward:", value=f"`{reward} words`", inline=False)
         self.add_field(name="Winners:", value=f"`{on_going}`", inline=False)
     
-    async def start(self, id, message: discord.Message):
+    async def start(self, message: discord.Message):
         await asyncio.sleep(self.giveaway_time)
         
         winner_message = ""
@@ -46,5 +46,3 @@ class GiveAwayEmbed(Embed):
         updated_embed = GiveAwayEmbed(self.view, self.bot, self.reward, self.giveaway_time, on_going=winner_message)
 
         await message.edit(embed=updated_embed, view=disabled_view)
-
-        delete_id(id)
