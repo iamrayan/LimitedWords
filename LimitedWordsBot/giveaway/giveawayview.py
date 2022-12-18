@@ -3,7 +3,7 @@ from discord.ui import Button, View, button
 
 
 class GiveAwayView(View):
-    def __init__(self, id):
+    def __init__(self):
         super().__init__()
         self.joined = []
     
