@@ -41,7 +41,9 @@ class GiveAwayEmbed(Embed):
             await message.reply("The winner is <@1040533717816459386> !")
             winner_message = winner.name
         
-        disabled_view = GiveAwayView().children[0].disabled = True
+        disabled_view = GiveAwayView()
+        GiveAwayView().children[0].disabled = True
+        
         updated_embed = GiveAwayEmbed(self.view, self.bot, self.reward, self.giveaway_time, on_going=winner_message)
 
         await message.edit(embed=updated_embed, view=disabled_view)
