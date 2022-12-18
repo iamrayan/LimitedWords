@@ -3,7 +3,6 @@ from discord.ui import View
 from random import choice
 from database.functions import *
 import asyncio
-from registerid.getid import *
 import time
 from .giveawayview import GiveAwayView
 from math import floor
