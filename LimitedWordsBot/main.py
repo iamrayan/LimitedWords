@@ -183,7 +183,7 @@ async def on_member_join(member: discord.Member):
     
 
     if exists:
-        message += f"**Welcome our member *<@{member.id}>!***\n\n- Since you have already began, you will be continuing with your latest word amount.\n\n"
+        message += f"**Welcome our member *<@{member.id}>!***\n\n- Since you have already began, you will be continuing with your latest word amount\n\n"
     else:
         await give_user_words(member, new_member_words)
         message += f"**Welcome our newest member *<@{member.id}>!***\n\n"
