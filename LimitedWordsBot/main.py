@@ -21,6 +21,8 @@ help_commands = {
     "monke (words)": "`Gamble up some words to see if monke gives you double the words or none`"
 }
 
+basic_roles = [1039442856177307658, 1054323884490493962, 1054324109972086804, 1054324225843937290, 1054324297495232582]
+
 prison_chat_id = 1046101755999563887
 
 
@@ -166,7 +168,8 @@ async def on_member_join(member: discord.Member):
         await member.edit(nick="[inf] "+member.name)
         return
 
-    await member.add_roles(member.guild.get_role(1039442856177307658))
+    for role_id in basic_roles:
+        await member.add_roles(member.guild.get_role(role_id))
 
     invites = await member.guild.invites()
     
