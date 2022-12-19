@@ -12,7 +12,8 @@ async def create_data(user: discord.Member, words: int):
         'words': words,
         'latestdaily': int(time.time() - 86401),
         'warnings': 0,
-        'streak': 0
+        'streak': 0,
+        "wish": False
     }
 
     my_base.data[str(user.id)] = data
@@ -27,15 +28,11 @@ async def update_words(guild: discord.Guild, bot: commands.Bot):
         if member != guild.owner and not member.bot:
             user_data = my_base.db.collection('users').document(str(member.id)).get()
 
-            if not user_data.exists:
-                print("User not logged in discovered!!!")
-            else:
-                dicted = user_data.to_dict()
-
-                print(dicted)
-                my_base.data[str(member.id)] = dicted
+            
+            dicted = user_data.to_dict()
+            my_base.data[str(member.id)] = dicted
                 
-                await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
+            await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
 
 
 async def give_user_words(user: discord.Member, words: int):
