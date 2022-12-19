@@ -195,7 +195,7 @@ async def on_member_join(member: discord.Member):
         inviter_words = math.ceil(new_member_words / 2)
 
         if inviter == member.guild.owner:
-            message += f"- The inviter, *<@{member.id}>* has also received *inf* words\n\n"
+            message += f"- The inviter, *<@{member.id}>* has also received *inf* words.\n\n"
         else:
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
