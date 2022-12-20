@@ -20,7 +20,7 @@ class Base:
         self.prisoners = {}
 
         Thread(target=self.update_data).start()
-        Thread(target=self.asyncio.run(self.prison_check)).start()
+        Thread(target=asyncio.run(self.prison_check)).start()
         
     
     def update_data(self):
