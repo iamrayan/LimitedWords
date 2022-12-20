@@ -20,7 +20,7 @@ class Base:
         self.prisoners = {}
 
         Thread(target=self.update_data).start()
-        Thread(target=self.prison_check).start()
+        Thread(target=asyncio.run(self.prison_check)).start()
         
     
     def update_data(self):
@@ -43,14 +43,13 @@ class Base:
                 else:
                     doc_ref.set(data)
     
-    def prison_check(self):
+    async def prison_check(self):
         while True:
             sleep(60)
 
             for prisoner, data in self.prisoners.items():
                 if data["time"] >= time():
-                    asyncio.run(prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168)))
-
+                    await prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168))
                     del self.prisoners[prisoner]
     
     def update_now(self):
@@ -63,7 +62,7 @@ class Base:
                 doc_ref.set(dat)
         
         for prisoner, data in self.prisoners.items():
-                doc_ref = self.db.collections('prisoners').document(prisoner.id)
+                doc_ref = self.db.collections('prisoners').document(str(prisoner.id))
 
                 if doc_ref.get().exists:
                     doc_ref.update(data)
