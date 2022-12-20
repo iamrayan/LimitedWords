@@ -36,7 +36,7 @@ class Base:
                     doc_ref.set(dat)
 
             for prisoner, data in self.prisoners.items():
-                doc_ref = self.db.collections('prisoners').document(prisoner.id)
+                doc_ref = self.db.collection('prisoners').document(prisoner.id)
 
                 if doc_ref.get().exists:
                     doc_ref.update(data)
