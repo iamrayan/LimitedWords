@@ -13,6 +13,9 @@ class AdminCog(commands.Cog):
         if ctx.author != ctx.guild.owner:
             await ctx.reply("This command is only available for {}".format(ctx.guild.owner.name), delete_after=5)
             return
+        if user == ctx.guild.owner:
+            await ctx.reply("Permission unavailable")
+            return
 
         total_words = await give_user_words(user, words)
 

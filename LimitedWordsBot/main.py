@@ -125,7 +125,7 @@ async def monke(interaction: discord.Interaction, words: int):
 
         await interaction.response.send_message(embed=MonkeEmbed(choice(decisions), words_converted, words_converted * 2))
 
-        total_words = await give_user_words(interaction.user, words_converted*2)
+        total_words = await give_user_words(interaction.user, words_converted*get_monkerate())
 
         await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
         
@@ -147,6 +147,13 @@ async def help(interaction: discord.Interaction):
     await interaction.response.send_message(embed=help_embed)
 
     print(colored("Command: ", "blue") + colored("Help command called!", "green"))
+
+@bot.tree.command(name="monke rate", description="Your monke rate")
+async def monkeratecom(interaction: discord.Interaction):
+    if interaction.user in my_base.prisoners.keys(): return
+    if interaction.user == interaction.guild.owner: return
+
+    await interaction.response.send_message(f"Your monke rate: `{get_monkerate(interaction.user)}`")
 
 
 @bot.event
@@ -223,8 +230,8 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
     if words_left == 0:
         await after.delete()
-        await add_prisoner(before.author, "out of words", time=time.time()+86400)
-        await before.author.edit(nick=f"[prisoner] {before.author.name}")
+        add_prisoner(before.author, "out of words", time=time.time()+86400)
+        await before.author.edit(nick=f"[jail] {before.author.name}")
 
         return
 

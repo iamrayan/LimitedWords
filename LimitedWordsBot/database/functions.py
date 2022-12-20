@@ -13,7 +13,8 @@ async def create_data(user: discord.Member, words: int):
         'latestdaily': int(time.time() - 86401),
         'warnings': 0,
         'streak': 0,
-        "wish": False
+        'wish': False,
+        'monkerate': 50
     }
 
     my_base.data[str(user.id)] = data
@@ -51,15 +52,15 @@ async def give_user_words(user: discord.Member, words: int):
         return words
 
 
-async def decrease_user_words_to(user: discord.Member, words: int):
+def decrease_user_words_to(user: discord.Member, words: int):
     my_base.data[str(user.id)]["words"] = words
 
 
-async def get_user_words(user: discord.User):
+def get_user_words(user: discord.User):
     return my_base.data[str(user.id)]["words"]
 
 
-async def get_inviter(invites, guild):
+def get_inviter(invites, guild):
     for invite in invites:
         invite_link = my_base.links.get(invite.code)
 
@@ -70,7 +71,7 @@ async def get_inviter(invites, guild):
     return False
 
 
-async def daily_ready(user: discord.User):
+def daily_ready(user: discord.User):
     latest_daily = my_base.data[str(user.id)]['latestdaily']
 
     current_time = int(time.time())
@@ -85,13 +86,22 @@ async def daily_ready(user: discord.User):
     return False
 
 
-async def redeem_daily(user: discord.User):
+def redeem_daily(user: discord.Member):
     my_base.data[str(user.id)]["latestdaily"] = int(time.time())
     my_base.data[str(user.id)]["streak"] += 1
 
 
-async def add_prisoner(user: discord.Member, reason: str, time: int):
+def add_prisoner(user: discord.Member, reason: str, time: int):
     my_base.prisoners[user] = {
         "reason": reason,
         "time": time
     }
+
+
+def add_monkerate(user: discord.Member, rate: int):
+    my_base.data[str(user.id)]["monkerate"] = my_base.data[str(user.id)]["monkerate"] + rate
+    return my_base.data[str(user.id)]["monkerate"]
+
+
+def get_monkerate(user: discord.Member):
+    return my_base.data[str(user.id)]["monkerate"]
