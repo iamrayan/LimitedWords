@@ -207,7 +207,7 @@ async def on_member_join(member: discord.Member):
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
 
-            message += f"- The inviter, *<@{member.id}>* has also received *{inviter_words}* words\n\n"
+            message += f"- The inviter, *<@{inviter.id}>* has also received *{inviter_words}* words\n\n"
         
     await member.edit(nick="[{0}] {1}".format(str(new_member_words), member.name))
 
