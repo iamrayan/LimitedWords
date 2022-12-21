@@ -86,7 +86,11 @@ def daily_ready(user: discord.User):
     return False
 
 
+<<<<<<< HEAD
 def redeem_daily(user: discord.Member):
+=======
+def redeem_daily(user: discord.User):
+>>>>>>> updates
     my_base.data[str(user.id)]["latestdaily"] = int(time.time())
     my_base.data[str(user.id)]["streak"] += 1
 
@@ -98,8 +102,13 @@ def add_prisoner(user: discord.Member, reason: str, time: int):
     }
 
 
+<<<<<<< HEAD
 def add_monkerate(user: discord.Member, rate: int):
     my_base.data[str(user.id)]["monkerate"] = my_base.data[str(user.id)]["monkerate"] + rate
+=======
+def add_monkerate(user: discord.Member, amount: int):
+    my_base.data[str(user.id)]["monkerate"] = my_base.data[str(user.id)]["monkerate"] + amount
+>>>>>>> updates
     return my_base.data[str(user.id)]["monkerate"]
 
 

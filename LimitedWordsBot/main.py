@@ -47,7 +47,7 @@ async def on_ready():
 async def daily(interaction: discord.Interaction):
     if interaction.user in my_base.prisoners.keys(): return
 
-    ready = await daily_ready(interaction.user)
+    ready = daily_ready(interaction.user)
 
     embed = discord.Embed(title="{}'s daily".format(interaction.user.name), colour=discord.Colour.green())
 
@@ -66,7 +66,7 @@ async def daily(interaction: discord.Interaction):
 
         await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
 
-        await redeem_daily(interaction.user)
+        redeem_daily(interaction.user)
         
 
     await interaction.response.send_message(embed=embed)
@@ -90,7 +90,7 @@ async def monke(interaction: discord.Interaction, words: int):
         await interaction.response.send_message("The max bet limited is 100")
         return
 
-    if int(words) > await get_user_words(interaction.user):
+    if int(words) > get_user_words(interaction.user):
         await interaction.response.send_message("You dont have enough words")
         return
 
@@ -180,7 +180,7 @@ async def on_member_join(member: discord.Member):
 
     invites = await member.guild.invites()
     
-    inviter = await get_inviter(invites, member.guild)
+    inviter = get_inviter(invites, member.guild)
     
     message = ""
     exists = my_base.exists(member)
@@ -202,12 +202,16 @@ async def on_member_join(member: discord.Member):
         inviter_words = math.ceil(new_member_words / 2)
 
         if inviter == member.guild.owner:
+<<<<<<< HEAD
             message += f"- The inviter, *<@{member.id}>* has also received *inf* words.\n\n"
+=======
+            message += f"- The inviter, *<@{inviter.id}>* has also received *inf* words.\n\n"
+>>>>>>> updates
         else:
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
 
-            message += f"- The inviter, *<@{member.id}>* has also received *{inviter_words}* words\n\n"
+            message += f"- The inviter, *<@{inviter.id}>* has also received *{inviter_words}* words\n\n"
         
     await member.edit(nick="[{0}] {1}".format(str(new_member_words), member.name))
 
@@ -241,7 +245,7 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
         return
 
     await before.author.edit(nick="["+str(words_left)+"] "+before.author.name)
-    await decrease_user_words_to(before.author, words_left)
+    decrease_user_words_to(before.author, words_left)
 
     print(colored("Dizzy: ", "blue") + colored("Message edited!", "green"))
     
@@ -255,7 +259,7 @@ async def word_check(ctx: discord.Message):
     if ctx.author.bot or ctx.author.id == ctx.guild.owner.id or ctx.channel.id == prison_chat_id: 
         return
 
-    words = await get_user_words(ctx.author)
+    words = get_user_words(ctx.author)
 
     used_words = len(ctx.clean_content.split(" "))
 
@@ -263,7 +267,7 @@ async def word_check(ctx: discord.Message):
 
     if words == 0:
         await ctx.delete()
-        await add_prisoner(ctx.author, "out of words", time=time.time()+86400)
+        add_prisoner(ctx.author, "out of words", time=time.time()+86400)
         await ctx.author.edit(nick=f"[prisoner] {ctx.author.name}")
 
         return
@@ -273,7 +277,7 @@ async def word_check(ctx: discord.Message):
         await ctx.channel.send("You cannot send words more than you have", delete_after=5)
         return
 
-    await decrease_user_words_to(ctx.author, words)
+    decrease_user_words_to(ctx.author, words)
 
     await ctx.author.edit(nick="["+str(words)+"] "+ctx.author.name)
 
