@@ -148,7 +148,7 @@ async def help(interaction: discord.Interaction):
 
     print(colored("Command: ", "blue") + colored("Help command called!", "green"))
 
-@bot.tree.command(name="monke rate", description="Your monke rate")
+@bot.tree.command(name="monkerate", description="Your monke rate")
 async def monkeratecom(interaction: discord.Interaction):
     if interaction.user in my_base.prisoners.keys(): return
     if interaction.user == interaction.guild.owner: return
