@@ -12,7 +12,7 @@ class GiveAwayEmbed(Embed):
     def __init__(self, view: View, bot, reward, giveaway_time, on_going="On going..."):
         self.bot = bot
 
-        super().__init__(title=":tada:   Give Away   :tada:", color=Colour.purple())
+        super().__init__(title=":tada:   Give Away   :tada:", color=choice([Colour.red(), Colour.green()]))
 
         self.view = view
         self.giveaway_time = giveaway_time

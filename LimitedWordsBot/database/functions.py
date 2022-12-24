@@ -2,6 +2,8 @@ from . import base
 import discord
 from discord.ext import commands
 import time
+from pets.snowman import Snowman
+from pets.petutilities import PetAbilities, PetPerks
 
 
 my_base = base.Base()
@@ -14,7 +16,11 @@ async def create_data(user: discord.Member, words: int):
         'warnings': 0,
         'streak': 0,
         'wish': False,
-        'monkerate': 50
+        'monkerate': 50,
+        'selectedpet': "",
+        'inviteboost': 0,
+        'lastpetactive': int(time.time() - 3600),
+        'pets': []
     }
 
     my_base.data[str(user.id)] = data
@@ -28,11 +34,10 @@ async def update_words(guild: discord.Guild, bot: commands.Bot):
     for member in guild.members:
         if member != guild.owner and not member.bot:
             user_data = my_base.db.collection('users').document(str(member.id)).get()
-
             
             dicted = user_data.to_dict()
             my_base.data[str(member.id)] = dicted
-                
+            
             await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
 
 
@@ -86,7 +91,7 @@ def daily_ready(user: discord.User):
     return False
 
 
-def redeem_daily(user: discord.User):
+def redeem_daily(user: discord.Member):
     my_base.data[str(user.id)]["latestdaily"] = int(time.time())
     my_base.data[str(user.id)]["streak"] += 1
 
@@ -103,5 +108,74 @@ def add_monkerate(user: discord.Member, amount: int):
     return my_base.data[str(user.id)]["monkerate"]
 
 
-def get_monkerate(user: discord.Member):
-    return my_base.data[str(user.id)]["monkerate"]
+def pet_exists(user: discord.Member):
+    return len(my_base.data[str(user.id)]["pets"]) > 0
+
+
+def user_pets(user: discord.Member):
+    pets = []
+
+    for pet in my_base.data[str(user.id)]["pets"]:
+        if pet["name"] == "Snowman":
+            abilities = PetAbilities(pet["speed"], pet["agility"], pet["strength"])
+            perks = PetPerks(pet["monkerate"], pet["inviteboost"])
+            pets.append(Snowman(abilities, perks, pet["mood"]))
+    
+    return pets
+
+
+def get_pet(user: discord.Member, pet: str):
+    for _pet in my_base.data[str(user.id)]["pets"]:
+        if _pet["name"] == pet:
+            abilities = PetAbilities(_pet["speed"], _pet["agility"], _pet["strength"])
+            perks = PetPerks(_pet["monkerate"], _pet["inviteboost"])
+            return Snowman(abilities, perks, _pet["mood"])
+
+
+def pet_selected(user: discord.Member):
+    if my_base.data[str(user.id)]["selectedpet"] == "":
+        return None
+    return get_pet(user, my_base.data[str(user.id)]["selectedpet"])
+
+
+def add_pet(user: discord.Member, pet):
+    my_base.data[str(user.id)]["pets"].append({
+        "agility": pet.abilities.agility,
+        "inviteboost": pet.perks.invite_boost,
+        "monkerate": pet.perks.monkerate,
+        "mood": pet.mood,
+        "name": str(pet),
+        "speed": pet.abilities.speed,
+        "strength": pet.abilities.strength
+    })
+
+    if my_base.data[str(user.id)]["selectedpet"] == "":
+        my_base.data[str(user.id)]["selectedpet"] = str(pet)
+
+
+def update_pet(user: discord.Member, pet):
+    for _pet in my_base.data[str(user.id)]["pets"]:
+        if _pet["name"] == str(pet):
+            _pet["agility"] = pet.abilities.agility
+            _pet["inviteboost"] = pet.perks.invite_boost
+            _pet["monkerate"] = pet.perks.monkerate
+            _pet["mood"] = pet.mood
+            _pet["speed"] = pet.abilities.speed
+            _pet["strength"] = pet.abilities.strength
+            return
+
+
+def inviteboost_avail(user: discord.Member):
+    for _pet in my_base.data[str(user.id)]["pets"]:
+        if _pet["name"] == my_base.data[str(user.id)]["selectedpet"]:
+            return _pet["inviteboost"]
+
+
+def user_monkerate(user: discord.Member):
+    monkerate = my_base.data[str(user.id)]["monkerate"]
+
+    for _pet in my_base.data[str(user.id)]["pets"]:
+        if _pet["name"] == my_base.data[str(user.id)]["selectedpet"]:
+            return monkerate + _pet["monkerate"]
+    
+    return monkerate
