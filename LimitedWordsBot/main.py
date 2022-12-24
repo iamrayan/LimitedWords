@@ -9,6 +9,8 @@ from admincog import AdminCog
 from termcolor import colored
 from monkeembed import MonkeEmbed
 from random import choice, randint
+from pets.petinteraction import attach_commands
+from christmascog import ChristmasCog
 
 
 cooldowns = {}
@@ -25,6 +27,9 @@ basic_roles = [1039442856177307658, 1054323884490493962, 1054324109972086804, 10
 
 prison_chat_id = 1046101755999563887
 
+def colors():
+    return choice([discord.Colour.red(), discord.Colour.green()])
+
 
 @bot.event
 async def on_ready():
@@ -38,6 +43,8 @@ async def on_ready():
     await bot.add_cog(AutoRoleCog(bot))
     await bot.add_cog(GiveAwayCog(bot))
     await bot.add_cog(AdminCog(bot))
+    await bot.add_cog(ChristmasCog())
+    attach_commands(bot)
     await bot.tree.sync()
 
     print(colored("System: ", "blue") + colored("Bot is Online!", "green"))
@@ -49,7 +56,7 @@ async def daily(interaction: discord.Interaction):
 
     ready = daily_ready(interaction.user)
 
-    embed = discord.Embed(title="{}'s daily".format(interaction.user.name), colour=discord.Colour.green())
+    embed = discord.Embed(title="{}'s daily".format(interaction.user.name), colour=colors())
 
     if not ready:
         embed.description = "You have already claimed your daily!"
@@ -101,7 +108,7 @@ async def monke(interaction: discord.Interaction, words: int):
         await interaction.response.send_message("Word amount should be a number")
         return
         
-    chance = randint(0, 100)
+    chance = randint(1, 100)
 
     if chance <= 65:
         decisions = [
@@ -123,9 +130,10 @@ async def monke(interaction: discord.Interaction, words: int):
             "Both of you decided to make a rap battle and you won. He gave you double amount the words"
         ]
 
-        await interaction.response.send_message(embed=MonkeEmbed(choice(decisions), words_converted, words_converted * 2))
+        return_amount = words_converted + int((user_monkerate(interaction.user) / 100) * words_converted)
+        await interaction.response.send_message(embed=MonkeEmbed(choice(decisions), words_converted, return_amount))
 
-        total_words = await give_user_words(interaction.user, words_converted*get_monkerate())
+        total_words = await give_user_words(interaction.user, return_amount)
 
         await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
         
@@ -138,11 +146,11 @@ async def monke(interaction: discord.Interaction, words: int):
 async def help(interaction: discord.Interaction):
     if interaction.user in my_base.prisoners.keys(): return
 
-    help_embed = discord.Embed(title="List of Commands", colour=discord.Colour.random())
+    help_embed = discord.Embed(title="List of Commands", colour=colors())
     help_embed.description = "Here are the list of available commands in this bot"
 
     for com, des in help_commands.items():
-         help_embed.add_field(name=com, value=des, inline=False)
+        help_embed.add_field(name=com, value=des, inline=False)
 
     await interaction.response.send_message(embed=help_embed)
 
@@ -153,7 +161,9 @@ async def monkeratecom(interaction: discord.Interaction):
     if interaction.user in my_base.prisoners.keys(): return
     if interaction.user == interaction.guild.owner: return
 
-    await interaction.response.send_message(f"Your monke rate: `{get_monkerate(interaction.user)}`")
+    await interaction.response.send_message(f"Your monke rate: `{user_monkerate(interaction.user)}%`")
+
+    print(colored("Command: ", "blue") + colored("Monke Rate command called!", "green"))
 
 
 @bot.event
@@ -200,13 +210,10 @@ async def on_member_join(member: discord.Member):
         message += "- Sadly, the inviter could not be found\n\n"
     if inviter is not None and not exists:
         inviter_words = math.ceil(new_member_words / 2)
+        inviter_words += inviteboost_avail(inviter)
 
         if inviter == member.guild.owner:
-<<<<<<< HEAD
-            message += f"- The inviter, *<@{member.id}>* has also received *inf* words.\n\n"
-=======
             message += f"- The inviter, *<@{inviter.id}>* has also received *inf* words.\n\n"
->>>>>>> updates
         else:
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
