@@ -220,7 +220,7 @@ async def on_member_join(member: discord.Member):
         message += "- Sadly, the inviter could not be found\n\n"
     if inviter is not None and not exists:
         inviter_words = math.ceil(new_member_words / 2)
-        inviter_words += inviteboost_avail(inviter)
+        inviter_delay_words += inviteboost_avail(inviter)
 
         if inviter == member.guild.owner:
             message += f"- The inviter, *<@{inviter.id}>* has also received *inf* words.\n\n"
@@ -261,6 +261,7 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
         await after.delete()
         add_prisoner(before.author, "out of words", time=time.time()+86400)
         await before.author.edit(nick=f"[jail] {before.author.name}")
+        await before.author.add_roles(before.guild.get_role(1046101250468487168))
 
         return
 
