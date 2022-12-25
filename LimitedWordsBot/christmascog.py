@@ -7,6 +7,7 @@ from termcolor import colored
 
 
 class ChristmasCog(commands.Cog):
+    @commands.is_owner()
     @commands.command()
     async def christmastime(self, ctx: commands.Context):
         embed = discord.Embed(title="**Ho, Ho, Ho...**  ", color=discord.Colour.green())

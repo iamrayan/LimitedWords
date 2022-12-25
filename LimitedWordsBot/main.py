@@ -11,6 +11,7 @@ from monkeembed import MonkeEmbed
 from random import choice, randint
 from pets.petinteraction import attach_commands
 from christmascog import ChristmasCog
+from moderationcog import ModerationCog
 
 
 cooldowns = {}
@@ -23,7 +24,7 @@ help_commands = {
     "monke (words)": "`Gamble up some words to see if monke gives you double the words or none`"
 }
 
-basic_roles = [1039442856177307658, 1054323884490493962, 1054324109972086804, 1054324225843937290, 1054324297495232582]
+basic_roles = [1054323884490493962, 1054324109972086804, 1054324225843937290, 1054324297495232582]
 
 prison_chat_id = 1046101755999563887
 
@@ -43,6 +44,7 @@ async def on_ready():
     await bot.add_cog(AutoRoleCog(bot))
     await bot.add_cog(GiveAwayCog(bot))
     await bot.add_cog(AdminCog(bot))
+    await bot.add_cog(ModerationCog(bot))
     await bot.add_cog(ChristmasCog())
     attach_commands(bot)
     await bot.tree.sync()
@@ -185,8 +187,15 @@ async def on_member_join(member: discord.Member):
         await member.edit(nick="[inf] "+member.name)
         return
 
+    member_is_prisoner = is_prisoner(member)
+
     for role_id in basic_roles:
-        await member.add_roles(member.guild.get_role(role_id))
+            await member.add_roles(member.guild.get_role(role_id))
+
+    if not member_is_prisoner:
+        await member.add_roles(member.guild.get_role(1039442856177307658))
+    else:
+        await member.add_roles(member.guild.get_role(1046101250468487168))
 
     invites = await member.guild.invites()
     
@@ -197,9 +206,10 @@ async def on_member_join(member: discord.Member):
     welcome_channel = bot.get_channel(1039442754926805043)
 
     new_member_words = random.randint(50, 150)
-    
 
-    if exists:
+    if exists and member_is_prisoner:
+        message += f"**Welcome our member *<@{member.id}>!***\n\n- You have been detected as prisoner, you will be send straigt to prison"
+    elif exists:
         message += f"**Welcome our member *<@{member.id}>!***\n\n- Since you have already began, you will be continuing with your latest word amount\n\n"
     else:
         await give_user_words(member, new_member_words)
@@ -214,13 +224,21 @@ async def on_member_join(member: discord.Member):
 
         if inviter == member.guild.owner:
             message += f"- The inviter, *<@{inviter.id}>* has also received *inf* words.\n\n"
+        elif is_prisoner(inviter):
+            delay_word(inviter, inviter_words)
+
+            message += f"- The inviter, *<@{inviter.id}>* is currently in prison, so *{inviter_words}* words have been delayed"
         else:
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
 
             message += f"- The inviter, *<@{inviter.id}>* has also received *{inviter_words}* words\n\n"
-        
-    await member.edit(nick="[{0}] {1}".format(str(new_member_words), member.name))
+    
+
+    if not member_is_prisoner:
+        await member.edit(nick=f"[{str(new_member_words)}] {member.name}")
+    else:
+        await member.edit(nick=f"[prison] {member.name}")
 
     message += "*Make sure you enjoy!*"
     await welcome_channel.send(message)
@@ -272,12 +290,13 @@ async def word_check(ctx: discord.Message):
 
     words = int(words) - used_words 
 
-    #if words == 0:
-        #await ctx.delete()
-        #add_prisoner(ctx.author, "out of words", time=time.time()+86400)
-        #await ctx.author.edit(nick=f"[prisoner] {ctx.author.name}")
+    if words == 0:
+        await ctx.delete()
+        add_prisoner(ctx.author, "out of words", time=time.time()+86400)
+        await ctx.author.edit(nick=f"[prison] {ctx.author.name}")
+        await ctx.author.add_roles(ctx.guild.get_role(1046101250468487168))
         
-        #return
+        return
 
     if words < 0:
         await ctx.delete()

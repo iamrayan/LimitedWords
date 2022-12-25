@@ -20,7 +20,10 @@ async def create_data(user: discord.Member, words: int):
         'selectedpet': "",
         'inviteboost': 0,
         'lastpetactive': int(time.time() - 3600),
-        'pets': []
+        'pets': [],
+        'prisoner': False,
+        'delayed': 0,
+        'warn': 0
     }
 
     my_base.data[str(user.id)] = data
@@ -37,9 +40,13 @@ async def update_words(guild: discord.Guild, bot: commands.Bot):
             
             dicted = user_data.to_dict()
             my_base.data[str(member.id)] = dicted
-            
-            await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
 
+            if not my_base.data[str(member.id)]["prisoner"]:
+                await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
+            else:
+                dicted = my_base.db.collection('prisoners').document(str(member.id)).get().to_dict()
+
+                my_base.prisoners[member] = dicted
 
 async def give_user_words(user: discord.Member, words: int):
     if my_base.exists(user):
@@ -101,6 +108,12 @@ def add_prisoner(user: discord.Member, reason: str, time: int):
         "reason": reason,
         "time": time
     }
+
+
+def is_prisoner(user: discord.Member):
+    if my_base.prisoners.get(user) != None:
+        return True
+    return False
 
 
 def add_monkerate(user: discord.Member, amount: int):
@@ -179,3 +192,12 @@ def user_monkerate(user: discord.Member):
             return monkerate + _pet["monkerate"]
     
     return monkerate
+
+
+def delay_word(user: discord.Member, words: int):
+    my_base.data[str(user.id)]["delayed"] = my_base.data[str(user.id)]["delayed"] + words
+
+
+def warn_user(user: discord.Member):
+    my_base.data[str(user.id)]["warn"] = my_base.data[str(user.id)]["warn"] + 1
+    return my_base.data[str(user.id)]["warn"]
