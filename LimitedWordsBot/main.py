@@ -272,12 +272,12 @@ async def word_check(ctx: discord.Message):
 
     words = int(words) - used_words 
 
-   # if words == 0:
-       # await ctx.delete()
-        #add_prisoner(ctx.author, "out of words", time=time.time()+86400)
-        #await ctx.author.edit(nick=f"[prisoner] {ctx.author.name}")
+    if words == 0:
+        await ctx.delete()
+        add_prisoner(ctx.author, "out of words", time=time.time()+86400)
+        await ctx.author.edit(nick=f"[prisoner] {ctx.author.name}")
         
-       # return
+        return
 
     if words < 0:
         await ctx.delete()
