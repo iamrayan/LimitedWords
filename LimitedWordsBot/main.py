@@ -125,9 +125,9 @@ async def monke(interaction: discord.Interaction, words: int):
         await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
     else:
         decisions = [
-            "Monke decided to be nice for once and gave you double words",
-            "Monke repaid you double words for buying him candy",
-            "Both of you decided to make a rap battle and you won. He gave you double amount the words"
+            "Monke decided to be nice for once and gave words",
+            "Monke repaid for buying him candy",
+            "Both of you decided to make a rap battle and you won"
         ]
 
         return_amount = words_converted + int((user_monkerate(interaction.user) / 100) * words_converted)
