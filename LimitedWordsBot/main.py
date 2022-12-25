@@ -209,12 +209,12 @@ async def on_member_join(member: discord.Member):
     if inviter == False:
         message += "- Sadly, the inviter could not be found\n\n"
     if inviter is not None and not exists:
-        inviter_words = math.ceil(new_member_words / 2)
-        inviter_words += inviteboost_avail(inviter)
-
         if inviter == member.guild.owner:
             message += f"- The inviter, *<@{inviter.id}>* has also received *inf* words.\n\n"
         else:
+            inviter_words = math.ceil(new_member_words / 2)
+            inviter_words += inviteboost_avail(inviter)
+
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
 
