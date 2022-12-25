@@ -4,7 +4,7 @@ from discord.ui import Button, View, button
 
 class GiveAwayView(View):
     def __init__(self):
-        super().__init__()
+        super().__init__(timeout=None)
         self.joined = []
     
     @button(style=ButtonStyle.success, emoji=PartialEmoji(name="🎉"))
