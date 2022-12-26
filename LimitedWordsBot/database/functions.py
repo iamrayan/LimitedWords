@@ -4,6 +4,7 @@ from discord.ext import commands
 import time
 from pets.snowman import Snowman
 from pets.petutilities import PetAbilities, PetPerks
+from math import floor
 
 
 my_base = base.Base()
@@ -21,7 +22,6 @@ async def create_data(user: discord.Member, words: int):
         'inviteboost': 0,
         'lastpetactive': int(time.time() - 3600),
         'pets': [],
-        'prisoner': False,
         'delayed': 0,
         'warn': 0
     }
@@ -41,7 +41,7 @@ async def update_words(guild: discord.Guild, bot: commands.Bot):
             dicted = user_data.to_dict()
             my_base.data[str(member.id)] = dicted
 
-            if not my_base.data[str(member.id)]["prisoner"]:
+            if not is_prisoner(member):
                 await member.edit(nick="["+str(dicted["words"])+"] "+member.name)
             else:
                 dicted = my_base.db.collection('prisoners').document(str(member.id)).get().to_dict()
@@ -103,11 +103,13 @@ def redeem_daily(user: discord.Member):
     my_base.data[str(user.id)]["streak"] += 1
 
 
-def add_prisoner(user: discord.Member, reason: str, time: int):
+async def add_prisoner(user: discord.Member, reason: str, _time: int):
     my_base.prisoners[user] = {
         "reason": reason,
-        "time": time
+        "time": _time
     }
+
+    await user.guild.get_channel(1046101628073291856).send(f"<@{user.id}> has been sent to prison till <t:{floor(time.time() + _time)}:R>")
 
 
 def is_prisoner(user: discord.Member):

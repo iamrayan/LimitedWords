@@ -19,16 +19,20 @@ class ModerationCog(commands.Cog):
         warns = warn_user(user)
 
         if warns == 3:
-            add_prisoner(user, "Warning reached 3", time() + 86400)
+            await add_prisoner(user, "Warning reached 3", time() + 86400)
             await user.edit(nick=f"[prison] {interaction.user.name}")
             await user.add_roles(interaction.guild.get_role(1046101250468487168))
             
-            await interaction.response.send_message(f"<@{user.id}> has been warned\n<@{user.id}> has been sent to prison for reaching 3 warnings")
+            dm = await user.create_dm()
+            await dm.send("You have reached 3 warnings and you have been sent to the **Prison**")
+
+            await interaction.response.send_message(f"<@{user.id}> has been warned\n<@{user.id}> has been sent to prison due to reaching 3 warnings")
             return
         
         if warns == 5:
             dm = await user.create_dm()
-            dm.send("You have been **Banned** on Limited Words\nReason: Reaching 5 warnings")
+            await dm.send("You have been **Banned** on Limited Words\nReason: Reaching 5 warnings")
+            await interaction.response.send_message(f"<@{user.id}> has been warned\n<@{user.id}> has been banned due to reached 5 warnings")
             await interaction.guild.ban(interaction.user, reason="Reached 5 warnings")
 
             return
@@ -45,4 +49,5 @@ class ModerationCog(commands.Cog):
         await my_base.release_prisoner(user)
 
         dm = await user.create_dm()
-        dm.send("You have been released from prison!")
+        await dm.send("You have been released from prison!")
+        await interaction.response.send_message("User has been released from prison!", ephemeral=True)

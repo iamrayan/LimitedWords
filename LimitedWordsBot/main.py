@@ -219,9 +219,6 @@ async def on_member_join(member: discord.Member):
     if inviter == False:
         message += "- Sadly, the inviter could not be found\n\n"
     if inviter is not None and not exists:
-        inviter_words = math.ceil(new_member_words / 2)
-        inviter_delay_words += inviteboost_avail(inviter)
-
         if inviter == member.guild.owner:
             message += f"- The inviter, *<@{inviter.id}>* has also received *inf* words.\n\n"
         elif is_prisoner(inviter):
@@ -229,6 +226,9 @@ async def on_member_join(member: discord.Member):
 
             message += f"- The inviter, *<@{inviter.id}>* is currently in prison, so *{inviter_words}* words have been delayed"
         else:
+            inviter_words = math.ceil(new_member_words / 2)
+            inviter_words += inviteboost_avail(inviter)
+
             await give_user_words(inviter, inviter_words)
             await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
 
@@ -259,7 +259,7 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
     if words_left == 0:
         await after.delete()
-        add_prisoner(before.author, "out of words", time=time.time()+86400)
+        await add_prisoner(before.author, "out of words", time=time.time()+86400)
         await before.author.edit(nick=f"[jail] {before.author.name}")
         await before.author.add_roles(before.guild.get_role(1046101250468487168))
 
@@ -293,7 +293,7 @@ async def word_check(ctx: discord.Message):
 
     if words == 0:
         await ctx.delete()
-        add_prisoner(ctx.author, "out of words", time=time.time()+86400)
+        await add_prisoner(ctx.author, "out of words", time=time.time()+86400)
         await ctx.author.edit(nick=f"[prison] {ctx.author.name}")
         await ctx.author.add_roles(ctx.guild.get_role(1046101250468487168))
         
