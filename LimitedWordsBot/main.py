@@ -12,6 +12,7 @@ from random import choice, randint
 from pets.petinteraction import attach_commands
 from christmascog import ChristmasCog
 from moderationcog import ModerationCog
+from generalinteractions import add_general_commands
 
 
 cooldowns = {}
@@ -27,9 +28,6 @@ help_commands = {
 basic_roles = [1054323884490493962, 1054324109972086804, 1054324225843937290, 1054324297495232582]
 
 prison_chat_id = 1046101755999563887
-
-def colors():
-    return choice([discord.Colour.red(), discord.Colour.green()])
 
 
 @bot.event
@@ -47,125 +45,10 @@ async def on_ready():
     await bot.add_cog(ModerationCog(bot))
     await bot.add_cog(ChristmasCog())
     attach_commands(bot)
+    add_general_commands(bot)
     await bot.tree.sync()
 
     print(colored("System: ", "blue") + colored("Bot is Online!", "green"))
-
-
-@bot.tree.command(name="daily", description="Claim your daily!")
-async def daily(interaction: discord.Interaction):
-    if interaction.user in my_base.prisoners.keys(): return
-
-    ready = daily_ready(interaction.user)
-
-    embed = discord.Embed(title="{}'s daily".format(interaction.user.name), colour=colors())
-
-    if not ready:
-        embed.description = "You have already claimed your daily!"
-        embed.set_footer(text="Come back soon for your daily")
-    else:
-        reward = 50 + ready["streak"] * 20
-
-        embed.description = "Your daily has been redeemed!"
-        embed.add_field(name="Reward", value=str(reward))
-        embed.add_field(name="Streak", value=ready["streak"])
-        embed.set_footer(text="You can redeem again in 24 hours!")
-
-        total_words = await give_user_words(interaction.user, reward)
-
-        await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
-
-        redeem_daily(interaction.user)
-        
-
-    await interaction.response.send_message(embed=embed)
-
-    print(colored("Command: ", "blue") + colored("Daily command called!", "green"))
-
-
-@bot.tree.command(name="monke", description="Gamble away your coins!")
-async def monke(interaction: discord.Interaction, words: int):
-    if interaction.user in my_base.prisoners.keys(): return
-
-    cooldown_user = cooldowns.get(str(interaction.user.id))
-    if cooldown_user != None:
-        if cooldown_user - time.time() < 0:
-            cooldowns.pop(str(interaction.user.id))
-        else:
-            await interaction.response.send_message("You need to wait {} more seconds to use this command".format(int(cooldown_user - time.time())))
-            return
-        
-    if words > 100:
-        await interaction.response.send_message("The max bet limited is 100")
-        return
-
-    if int(words) > get_user_words(interaction.user):
-        await interaction.response.send_message("You dont have enough words")
-        return
-
-    words_converted = None
-    try:
-        words_converted = int(words)
-    except:
-        await interaction.response.send_message("Word amount should be a number")
-        return
-        
-    chance = randint(1, 100)
-
-    if chance <= 65:
-        decisions = [
-            "Monke wanted a vacation so badly that he took your words",
-            "Monke sent his kids but that naught little monke's decided to steal it",
-            "Monke was too cute that you accidently tripped and sent your word's flying off to monke's pocket",
-            "You decide to steal his words but you failed and monke stole your words"
-        ]
-
-        await interaction.response.send_message(embed=MonkeEmbed(choice(decisions), words_converted, 0))
-
-        total_words = await give_user_words(interaction.user, words_converted * (-1))
-
-        await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
-    else:
-        decisions = [
-            "Monke decided to be nice for once and gave you double words",
-            "Monke repaid you double words for buying him candy",
-            "Both of you decided to make a rap battle and you won. He gave you double amount the words"
-        ]
-
-        return_amount = words_converted + int((user_monkerate(interaction.user) / 100) * words_converted)
-        await interaction.response.send_message(embed=MonkeEmbed(choice(decisions), words_converted, return_amount))
-
-        total_words = await give_user_words(interaction.user, return_amount)
-
-        await interaction.user.edit(nick="["+str(total_words)+"] "+interaction.user.name)
-        
-    cooldowns[str(interaction.user.id)] = time.time()+60
-
-    print(colored("Command: ", "blue") + colored("Monke command called!", "green"))
-
-
-@bot.tree.command(name="help", description="List of all the commands")
-async def help(interaction: discord.Interaction):
-    if interaction.user in my_base.prisoners.keys(): return
-
-    help_embed = discord.Embed(title="List of Commands", colour=colors())
-    help_embed.description = "Here are the list of available commands in this bot"
-
-    for com, des in help_commands.items():
-        help_embed.add_field(name=com, value=des, inline=False)
-
-    await interaction.response.send_message(embed=help_embed)
-
-    print(colored("Command: ", "blue") + colored("Help command called!", "green"))
-
-@bot.tree.command(name="monkerate", description="Your monke rate")
-async def monkeratecom(interaction: discord.Interaction):
-    if interaction.user in my_base.prisoners.keys(): return
-    if interaction.user == interaction.guild.owner: return
-
-    await interaction.response.send_message(f"Your monke rate: `{user_monkerate(interaction.user)}%`")
-
-    print(colored("Command: ", "blue") + colored("Monke Rate command called!", "green"))
 
 
 @bot.event
@@ -231,14 +114,14 @@ async def on_member_join(member: discord.Member):
             if boost_avail != 0 or boost_avail is not None:
                 inviter_words += boost_avail
 
-            await give_user_words(inviter, inviter_words)
-            await inviter.edit(nick="["+str(inviter_words)+"] "+inviter.name)
+            words_given = await give_user_words(inviter, inviter_words)
+            await inviter.edit(nick="["+str(words_given)+"] "+inviter.name)
 
             message += f"- The inviter, *<@{inviter.id}>* has also received *{inviter_words}* words\n\n"
     
 
     if not member_is_prisoner:
-        await member.edit(nick=f"[{str(new_member_words)}] {member.name}")
+        await member.edit(nick=f"[{str(get_user_words(member))}] {member.name}")
     else:
         await member.edit(nick=f"[prison] {member.name}")
 
@@ -281,6 +164,21 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 @bot.listen("on_message")
 async def word_check(ctx: discord.Message):
     if ctx.author in my_base.prisoners.keys(): return
+    if ctx.channel.id == 1057596783078944850 and ctx.type == discord.MessageType.premium_guild_subscription:
+        reward_words = randint(750, 1000)
+
+        if is_prisoner(ctx.author):
+            delay_word(ctx.author, reward_words)
+
+            await ctx.channel.send(f"**<@{ctx.author.id}> has boosted our server!**\nReward: {reward_words}!\n*Since he is in prison, his words will be delayed*")
+        else:
+            words = await give_user_words(ctx.author, reward_words)
+            await ctx.author.edit(nick=f"[{words}] {ctx.author.name}")
+
+            await ctx.channel.send(f"**<@{ctx.author.id}> has boosted our server!**\nReward: {reward_words}!")
+        
+        return
+        
     if ctx.channel.id == 1053640012924731442:
         await ctx.add_reaction("✅")
         await ctx.add_reaction("❌")

@@ -10,8 +10,8 @@ class ModerationCog(commands.Cog):
         bot.tree.add_command(self.warn)
 
 
-    @app_commands.context_menu(name="Warn")
-    async def warn(interaction: discord.Interaction, user: discord.Member):
+    @app_commands.command(name="Warn")
+    async def warn(interaction: discord.Interaction, user: discord.Member, reason: str):
         if is_prisoner(user):
             await interaction.response.send_message("User is in prison", ephemeral=True)
             return
@@ -37,10 +37,12 @@ class ModerationCog(commands.Cog):
 
             return
 
+        dm = await user.create_dm()
+        await dm.send(f"You have been **Warned** on Limited Words for {reason}")
         await interaction.response.send_message(f"<@{user.id}> has been warned\nTotal warns for <@{user.id}> - {warns}")
 
     
-    @app_commands.context_menu(name="Release")
+    @app_commands.command(name="release", description="Release prisoners")
     async def release(interaction: discord.Interaction, user: discord.Member):
         if not is_prisoner(user):
             await interaction.response.send_message("User is not a prisoner", ephemeral=True)
