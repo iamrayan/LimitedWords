@@ -13,6 +13,7 @@ from pets.petinteraction import attach_commands
 from christmascog import ChristmasCog
 from moderationcog import ModerationCog
 from generalinteractions import add_general_commands
+from wordpopup import WordPopUp
 
 
 cooldowns = {}
@@ -44,6 +45,7 @@ async def on_ready():
     await bot.add_cog(AdminCog(bot))
     await bot.add_cog(ModerationCog(bot))
     await bot.add_cog(ChristmasCog())
+    await bot.add_cog(WordPopUp(bot))
     attach_commands(bot)
     add_general_commands(bot)
     await bot.tree.sync()
