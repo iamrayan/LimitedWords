@@ -36,12 +36,8 @@ class Base:
                     doc_ref.set(dat)
 
             for prisoner, data in self.prisoners.items():
-<<<<<<< HEAD
                 doc_ref = self.db.collection('prisoners').document(str(prisoner.id))
-=======
-                doc_ref = self.db.collection('prisoners').document(prisoner.id)
->>>>>>> main
-
+                
                 if doc_ref.get().exists:
                     doc_ref.update(data)
                 else:
