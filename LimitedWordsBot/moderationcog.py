@@ -6,12 +6,8 @@ from time import time
 
 
 class ModerationCog(commands.Cog):
-    def __init__(self, bot: commands.Bot):
-        bot.tree.add_command(self.warn)
-
-
-    @app_commands.command(name="Warn")
-    async def warn(interaction: discord.Interaction, user: discord.Member, reason: str):
+    @app_commands.command(name="warn")
+    async def warn(self, interaction: discord.Interaction, user: discord.Member, reason: str):
         if is_prisoner(user):
             await interaction.response.send_message("User is in prison", ephemeral=True)
             return
@@ -43,7 +39,7 @@ class ModerationCog(commands.Cog):
 
     
     @app_commands.command(name="release", description="Release prisoners")
-    async def release(interaction: discord.Interaction, user: discord.Member):
+    async def release(self, interaction: discord.Interaction, user: discord.Member):
         if not is_prisoner(user):
             await interaction.response.send_message("User is not a prisoner", ephemeral=True)
             return

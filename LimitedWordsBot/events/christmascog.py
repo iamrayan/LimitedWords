@@ -9,12 +9,12 @@ from termcolor import colored
 class ChristmasCog(commands.Cog):
     @commands.is_owner()
     @commands.command()
-    async def christmastime(self, ctx: commands.Context):
+    async def christmastime(self, ctx: commands.Context, time):
         embed = discord.Embed(title="**Ho, Ho, Ho...**  ", color=discord.Colour.green())
         embed.description = "*To celebrate Christmas, we will be offering a\ngreat opportunity for anyone to receive any\nwish from the list below*"
         embed.set_footer(text="🎅 This is a limited time offer 🎅")
         
-        view = ChristmasView()
+        view = ChristmasView(time)
 
         message = await ctx.send(embed=embed, view=view)
 
@@ -23,10 +23,9 @@ class ChristmasCog(commands.Cog):
 
 
 class ChristmasView(ui.View):
-    def __init__(self):
+    def __init__(self, sleep_time):
         super().__init__(timeout=None)
-        self.sleep_time = 432000
-    
+        self.sleep_time = sleep_time
 
     @ui.button(label="500 words", style=discord.ButtonStyle.danger)
     async def wordwish(self, interaction: discord.Interaction, button: ui.Button):
@@ -40,10 +39,9 @@ class ChristmasView(ui.View):
 
         my_base.data[str(interaction.user.id)]["wish"] = True
 
-        await interaction.response.send_message("Wish Granted!\n500 words have been added to your balance!")
+        await interaction.response.send_message("Wish Granted!\n500 words have been added to your balance!", ephermal=True)
 
-        print(colored("Christmas: ", "blue") + colored("500 words wish made!", "green"))
-    
+        print(colored("Christmas: ", "blue") + colored("500 words wish made!", "green")) 
     
     @ui.button(label="Monkerate 25%+", style=discord.ButtonStyle.success)
     async def increasemonkerate(self, interaction: discord.Interaction, button: ui.Button):
@@ -58,7 +56,6 @@ class ChristmasView(ui.View):
         await interaction.response.send_message(f"Wish Granted!\nYour monke rate is now {rate}!")
 
         print(colored("Christmas: ", "blue") + colored("25%+ Monke Rate wish made!", "green"))
-    
 
     @ui.button(label="Snowman (pet)", style=discord.ButtonStyle.danger)    
     async def petsnowman(self, interaction: discord.Interaction, button: ui.Button):
@@ -81,11 +78,10 @@ class ChristmasView(ui.View):
     def add_message(self, message: discord.Message):
         self.message = message
 
-
     async def end(self):
         await asyncio.sleep(self.sleep_time)
         
-        disabled_view = ChristmasView()
+        disabled_view = ChristmasView(self.sleep_time)
 
         for i in disabled_view.children:
             i.disabled = True

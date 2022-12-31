@@ -2,8 +2,8 @@ from random import choice, randint
 import time
 import discord
 from termcolor import colored
-from LimitedWordsBot.database.functions import daily_ready, get_user_words, give_user_words, redeem_daily, user_monkerate, my_base
-from LimitedWordsBot.monkeembed import MonkeEmbed
+from database.functions import daily_ready, get_user_words, give_user_words, redeem_daily, user_monkerate, my_base
+from monkeembed import MonkeEmbed
 
 cooldowns = []
 def colors():
