@@ -54,8 +54,6 @@ async def on_ready():
     print(colored("System: ", "blue") + colored("Bot is Online!", "green"))
 
 
-<<<<<<< HEAD
-=======
 @bot.tree.command(name="daily", description="Claim your daily!")
 async def daily(interaction: discord.Interaction):
     if interaction.user in my_base.prisoners.keys(): return
