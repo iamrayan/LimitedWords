@@ -8,7 +8,7 @@ from threading import Thread
 
 class Base:
     def __init__(self):
-        cred = credentials.Certificate("database/serviceAccountKey.json")
+        cred = credentials.Certificate("LimitedWordsBot/database/serviceAccountKey.json")
         try:
             firebase_admin.initialize_app(cred)
         except:
