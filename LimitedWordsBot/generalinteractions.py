@@ -5,7 +5,7 @@ from termcolor import colored
 from database.functions import daily_ready, get_user_words, give_user_words, redeem_daily, user_monkerate, my_base
 from monkeembed import MonkeEmbed
 
-cooldowns = []
+cooldowns = {}
 def colors():
     return choice([discord.Colour.red(), discord.Colour.green()])
 
