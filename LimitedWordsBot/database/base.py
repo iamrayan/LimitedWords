@@ -36,7 +36,11 @@ class Base:
                     doc_ref.set(dat)
 
             for prisoner, data in self.prisoners.items():
+<<<<<<< HEAD
+                doc_ref = self.db.collection('prisoners').document(str(prisoner.id))
+=======
                 doc_ref = self.db.collection('prisoners').document(prisoner.id)
+>>>>>>> main
 
                 if doc_ref.get().exists:
                     doc_ref.update(data)
@@ -45,12 +49,11 @@ class Base:
     
     async def prison_check(self):
         while True:
-            sleep(60)
+            await asyncio.sleep(60)
 
             for prisoner, data in self.prisoners.items():
-                if data["time"] >= time():
-                    await prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168))
-                    del self.prisoners[prisoner]
+                if data["time"] <= time():
+                    await self.release_prisoner(prisoner)
     
     def update_now(self):
         for doc, dat in self.data.items():
@@ -72,3 +75,16 @@ class Base:
     def exists(self, user: discord.Member):
         doc = self.db.collection('users').document(str(user.id))
         return doc.get().exists
+    
+    async def release_prisoner(self, prisoner):
+        await prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168))
+        await prisoner.add_roles(prisoner.guild.get_role(1039442856177307658))
+        delay_words = self.data[str(prisoner.id)]["delayed"]
+        self.data[str(prisoner.id)]["words"] = self.data[str(prisoner.id)]["words"] + delay_words
+        self.data[str(prisoner.id)]["delayed"] = 0
+
+        words = self.data[str(prisoner.id)]["words"]
+
+        await prisoner.edit(nick=f"[{words}] {prisoner.name}")
+
+        self.prisoners.pop(prisoner)

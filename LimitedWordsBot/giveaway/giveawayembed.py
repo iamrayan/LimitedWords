@@ -32,13 +32,24 @@ class GiveAwayEmbed(Embed):
             await message.reply("No one participated")
             winner_message = "N/A"
         else:
-            winner = choice(self.view.joined)
+            winner = None
 
-            total_words = await give_user_words(winner, self.reward)
+            while True:
+                winner = choice(self.view.joined)
+                if message.guild.get_member(winner) is not None:
+                    break
 
-            await winner.edit(nick="["+str(total_words)+"] "+winner.name)
+            if not is_prisoner(winner):
+                total_words = await give_user_words(winner, self.reward)
 
-            await message.reply("The winner is <@1040533717816459386> !")
+                await winner.edit(nick="["+str(total_words)+"] "+winner.name)
+
+                await message.reply("The winner is <@1040533717816459386> !")
+            else:
+                delay_word(winner, self.reward)
+
+                await message.reply("The winner is <@1040533717816459386> !\nSince <@1040533717816459386> is currently in prison, his words will be delayed till he gets out of prison")
+
             winner_message = winner.name
         
         disabled_view = GiveAwayView()
