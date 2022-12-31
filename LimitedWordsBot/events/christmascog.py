@@ -39,11 +39,7 @@ class ChristmasView(ui.View):
 
         my_base.data[str(interaction.user.id)]["wish"] = True
 
-<<<<<<< HEAD:LimitedWordsBot/events/christmascog.py
-        await interaction.response.send_message("Wish Granted!\n500 words have been added to your balance!", ephermal=True)
-=======
         await interaction.response.send_message("Wish Granted!\n500 words have been added to your balance!", ephemeral=True)
->>>>>>> main:LimitedWordsBot/christmascog.py
 
         print(colored("Christmas: ", "blue") + colored("500 words wish made!", "green")) 
     
