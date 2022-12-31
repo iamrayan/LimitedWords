@@ -8,7 +8,7 @@ from threading import Thread
 
 class Base:
     def __init__(self):
-        cred = credentials.Certificate("LimitedWordsBot/database/serviceAccountKey.json")
+        cred = credentials.Certificate("database/serviceAccountKey.json")
         try:
             firebase_admin.initialize_app(cred)
         except:
@@ -36,7 +36,7 @@ class Base:
                     doc_ref.set(dat)
 
             for prisoner, data in self.prisoners.items():
-                doc_ref = self.db.collections('prisoners').document(str(prisoner.id))
+                doc_ref = self.db.collection('prisoners').document(str(prisoner.id))
 
                 if doc_ref.get().exists:
                     doc_ref.update(data)
@@ -45,10 +45,10 @@ class Base:
     
     async def prison_check(self):
         while True:
-            sleep(60)
+            await asyncio.sleep(60)
 
             for prisoner, data in self.prisoners.items():
-                if data["time"] >= time():
+                if data["time"] <= time():
                     await self.release_prisoner(prisoner)
     
     def update_now(self):

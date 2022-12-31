@@ -109,7 +109,7 @@ async def add_prisoner(user: discord.Member, reason: str, _time: int):
         "time": _time
     }
 
-    await user.guild.get_channel(1046101628073291856).send(f"<@{user.id}> has been sent to prison till <t:{floor(time.time() + _time)}:R>")
+    await user.guild.get_channel(1046101628073291856).send(f"<@{user.id}> has been sent to prison till <t:{floor(_time)}:R>")
 
 
 def is_prisoner(user: discord.Member):

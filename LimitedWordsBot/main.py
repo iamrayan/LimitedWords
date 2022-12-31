@@ -129,7 +129,7 @@ async def on_member_join(member: discord.Member):
         await member.edit(nick=f"[prison] {member.name}")
 
     message += "*Make sure you enjoy!*"
-    await welcome_channel.send(message)
+    await welcome_channel.send(message) 
 
     print(colored("Dizzy: ", "blue") + colored("New Member joined!", "green"))
 
