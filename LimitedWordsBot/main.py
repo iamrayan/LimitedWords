@@ -170,7 +170,6 @@ async def monkeratecom(interaction: discord.Interaction):
     print(colored("Command: ", "blue") + colored("Monke Rate command called!", "green"))
 
 
->>>>>>> main
 @bot.event
 async def on_invite_create(invite: discord.Invite):
     my_base.links[invite.code] = invite
