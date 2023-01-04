@@ -165,6 +165,9 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
 @bot.listen("on_message")
 async def word_check(ctx: discord.Message):
+    if ctx.guild is None:
+        return
+
     if ctx.author in my_base.prisoners.keys(): return
     if ctx.channel.id == 1057596783078944850 and ctx.type == discord.MessageType.premium_guild_subscription:
         reward_words = randint(750, 1000)
@@ -195,7 +198,7 @@ async def word_check(ctx: discord.Message):
 
     if words == 0:
         await ctx.delete()
-        await add_prisoner(ctx.author, "out of words", time=time.time()+86400)
+        await add_prisoner(ctx.author, "out of words", time.time()+86400)
         await ctx.author.edit(nick=f"[prison] {ctx.author.name}")
         await ctx.author.add_roles(ctx.guild.get_role(1046101250468487168))
         
