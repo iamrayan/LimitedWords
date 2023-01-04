@@ -1,3 +1,4 @@
+from discord import Member
 from .pettemplate import PetTemplate
 from .petutilities import *
 

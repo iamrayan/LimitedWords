@@ -20,7 +20,7 @@ class Base:
         self.prisoners = {}
 
         Thread(target=self.update_data).start()
-        Thread(target=asyncio.run, args=(self.prison_check(),)).start()
+        Thread(target=self.prison_check).start()
         
     
     def update_data(self):
@@ -43,13 +43,13 @@ class Base:
                 else:
                     doc_ref.set(data)
     
-    async def prison_check(self):
+    def prison_check(self):
         while True:
-            await asyncio.sleep(60)
+            sleep(60)
 
             for prisoner, data in self.prisoners.items():
                 if data["time"] <= time():
-                    await self.release_prisoner(prisoner)
+                    self.release_prisoner(prisoner)
     
     def update_now(self):
         for doc, dat in self.data.items():
@@ -73,14 +73,14 @@ class Base:
         return doc.get().exists
     
     async def release_prisoner(self, prisoner):
-        await prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168))
-        await prisoner.add_roles(prisoner.guild.get_role(1039442856177307658))
+        asyncio.run(prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168)))
+        asyncio.run(prisoner.add_roles(prisoner.guild.get_role(1039442856177307658)))
         delay_words = self.data[str(prisoner.id)]["delayed"]
         self.data[str(prisoner.id)]["words"] = self.data[str(prisoner.id)]["words"] + delay_words
         self.data[str(prisoner.id)]["delayed"] = 0
 
         words = self.data[str(prisoner.id)]["words"]
 
-        await prisoner.edit(nick=f"[{words}] {prisoner.name}")
+        asyncio.run(prisoner.edit(nick=f"[{words}] {prisoner.name}"))
 
         self.prisoners.pop(prisoner)
