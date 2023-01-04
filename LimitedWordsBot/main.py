@@ -41,7 +41,7 @@ async def on_ready():
         my_base.links[invite.code] = invite
 
     await bot.add_cog(AutoRoleCog(bot))
-    await bot.add_cog(GiveAwayCog(bot))
+    #await bot.add_cog(GiveAwayCog(bot))
     await bot.add_cog(AdminCog(bot))
     await bot.add_cog(ModerationCog(bot))
     await bot.add_cog(ChristmasCog())
