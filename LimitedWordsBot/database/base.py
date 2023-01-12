@@ -43,7 +43,7 @@ class Base:
                 else:
                     doc_ref.set(data)
     
-    def prison_check(self):
+    async def prison_check(self):
         while True:
             sleep(60)
 
@@ -61,7 +61,7 @@ class Base:
                 doc_ref.set(dat)
         
         for prisoner, data in self.prisoners.items():
-                doc_ref = self.db.collections('prisoners').document(str(prisoner.id))
+                doc_ref = self.db.collection('prisoners').document(str(prisoner.id))
 
                 if doc_ref.get().exists:
                     doc_ref.update(data)
@@ -73,8 +73,8 @@ class Base:
         return doc.get().exists
     
     async def release_prisoner(self, prisoner):
-        asyncio.run(prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168)))
-        asyncio.run(prisoner.add_roles(prisoner.guild.get_role(1039442856177307658)))
+        await prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168))
+        await prisoner.add_roles(prisoner.guild.get_role(1039442856177307658))
         delay_words = self.data[str(prisoner.id)]["delayed"]
         self.data[str(prisoner.id)]["words"] = self.data[str(prisoner.id)]["words"] + delay_words
         self.data[str(prisoner.id)]["delayed"] = 0
