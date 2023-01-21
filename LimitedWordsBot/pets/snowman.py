@@ -6,6 +6,9 @@ from .petutilities import *
 class Snowman(PetTemplate):
     def __init__(self, abilities: PetAbilities, perks: PetPerks, mood: int):
         super().__init__(abilities, perks, mood)
+    
+    def catch_snow_ball(self, user: Member):
+        pass
 
     def __str__(self) -> str:
         return "Snowman"
