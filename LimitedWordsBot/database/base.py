@@ -40,8 +40,6 @@ class Base:
             print(colored("System: ", "red") + colored("Prison check complete!", "green"))
     
     def update_now(self):
-        Thread(target=update).start()
-
         def update():
             print(colored("System: ", "red") + colored("Database updating...", "green"))
 
@@ -61,7 +59,9 @@ class Base:
                     else:
                         doc_ref.set(data)
         
-        print(colored("System: ", "red") + colored("Database updated!", "green"))
+            print(colored("System: ", "red") + colored("Database updated!", "green"))
+    
+        Thread(target=update).start()
     
     def exists(self, user: discord.Member):
         doc = self.db.collection('users').document(str(user.id))
@@ -70,6 +70,8 @@ class Base:
     async def release_prisoner(self, prisoner):
         await prisoner.remove_roles(prisoner.guild.get_role(1046101250468487168))
         await prisoner.add_roles(prisoner.guild.get_role(1039442856177307658))
+
+        self.db.collection('prisoners').document(prisoner.id).delete()
 
         delay_words = self.data[str(prisoner.id)]["delayed"]
 
