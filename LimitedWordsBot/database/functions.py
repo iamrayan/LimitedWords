@@ -5,10 +5,18 @@ import time
 from pets.snowman import Snowman
 from pets.petutilities import PetAbilities, PetPerks
 from math import floor
+import asyncio
+from termcolor import colored
 
 
 my_base = base.Base()
 
+
+def ready():
+    asyncio.gather(
+        my_base.prison_check(),
+        my_base.update_data()
+    )
 
 async def create_data(user: discord.Member, words: int):
     data = {
@@ -110,6 +118,12 @@ async def add_prisoner(user: discord.Member, reason: str, _time: int):
     }
 
     await user.guild.get_channel(1046101628073291856).send(f"<@{user.id}> has been sent to prison till <t:{floor(_time)}:R>")
+
+    dm = await user.create_dm()
+    await dm.send(f"You have been sent to prison\nBy: `{user.name}`\nReason: `{reason}`")
+
+    print(colored("Prison: ", "yellow") + colored("Member prisoned!", "green"))
+
 
 
 def is_prisoner(user: discord.Member):

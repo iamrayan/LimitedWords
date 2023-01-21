@@ -33,6 +33,7 @@ prison_chat_id = 1046101755999563887
 
 @bot.event
 async def on_ready():
+    ready()
     await update_words(bot.get_guild(1039438917105102848), bot)
     
     invites = await bot.get_guild(1039438917105102848).invites()
@@ -175,7 +176,7 @@ async def word_check(ctx: discord.Message):
         if is_prisoner(ctx.author):
             delay_word(ctx.author, reward_words)
 
-            await ctx.channel.send(f"**<@{ctx.author.id}> has boosted our server!**\nReward: {reward_words}!\n*Since he is in prison, his words will be delayed*")
+            await ctx.channel.send(f"**<@{ctx.author.id}> has boosted our server!**\nReward: {reward_words}!\n*Since you is in prison, you words will be delayed*")
         else:
             words = await give_user_words(ctx.author, reward_words)
             await ctx.author.edit(nick=f"[{words}] {ctx.author.name}")
