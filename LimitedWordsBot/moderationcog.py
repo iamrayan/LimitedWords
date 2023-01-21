@@ -72,9 +72,6 @@ class ModerationCog(commands.Cog):
         await add_prisoner(user, reason, time() + seconds)
         await user.edit(nick=f"[prison] {user.name}")
         await user.add_roles(interaction.guild.get_role(1046101250468487168))
-            
-        dm = await user.create_dm()
-        await dm.send(f"You have been sent to prison\nBy: `{interaction.user.name}`\nReason: `{reason}`")
 
         await interaction.followup.send(f"<@{user.id}> has been sent to prison\nReason: {reason}")
 
