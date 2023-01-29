@@ -2,7 +2,7 @@ from random import choice, randint
 import time
 import discord
 from termcolor import colored
-from database.functions import daily_ready, get_user_words, give_user_words, redeem_daily, user_monkerate, my_base
+from database.functions import *
 from monkeembed import MonkeEmbed
 
 cooldowns = {}
@@ -109,3 +109,15 @@ def add_general_commands(bot):
         await interaction.response.send_message(f"Your monke rate: `{user_monkerate(interaction.user)}%`")
 
         print(colored("Command: ", "blue") + colored("Monke Rate command called!", "green"))
+
+    @bot.tree.command(name="warnings", description="Get the warning amount of someone")
+    async def warnings(interaction: discord.Interaction, user: discord.Member):
+        warns = get_user_warns(user)
+
+        embed = discord.Embed(color=discord.Colour.random())
+
+        embed.set_author(name=f"Member: {user.name}\nWarning: {warns}")
+
+        await interaction.response.send_message(embed=embed)
+
+        print(colored("Command: ", "blue") + colored("Warnings command called!", "green"))

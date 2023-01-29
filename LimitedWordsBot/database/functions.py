@@ -20,7 +20,7 @@ def ready():
 
 async def create_data(user: discord.Member, words: int):
     data = {
-        'words': words,
+        'words': words, 
         'latestdaily': int(time.time() - 86401),
         'warnings': 0,
         'streak': 0,
@@ -31,7 +31,6 @@ async def create_data(user: discord.Member, words: int):
         'lastpetactive': int(time.time() - 3600),
         'pets': [],
         'delayed': 0,
-        'warn': 0
     }
 
     my_base.data[str(user.id)] = data
@@ -119,8 +118,10 @@ async def add_prisoner(user: discord.Member, reason: str, _time: int):
 
     await user.guild.get_channel(1046101628073291856).send(f"<@{user.id}> has been sent to prison till <t:{floor(_time)}:R>")
 
+    dm_embed = WarnEmbed(3, discord.Colour.red(), reason, "Prison")
+            
     dm = await user.create_dm()
-    await dm.send(f"You have been sent to prison\nBy: `{user.name}`\nReason: `{reason}`")
+    await dm.send(embed=dm_embed)
 
     print(colored("Prison: ", "yellow") + colored("Member prisoned!", "green"))
 
@@ -215,5 +216,23 @@ def delay_word(user: discord.Member, words: int):
 
 
 def warn_user(user: discord.Member):
-    my_base.data[str(user.id)]["warn"] = my_base.data[str(user.id)]["warn"] + 1
-    return my_base.data[str(user.id)]["warn"]
+    my_base.data[str(user.id)]["warnings"] += 1
+    return my_base.data[str(user.id)]["warnings"]
+
+
+def get_user_warns(user: discord.Member):
+    return my_base.data[str(user.id)]["warnings"]
+
+
+def revoke_warn(user: discord.Member):
+    my_base.data[str(user.id)]["warnings"] -= 1
+    return my_base.data[str(user.id)]["warnings"]
+
+
+
+class WarnEmbed(discord.Embed):
+    def __init__(self, warn_number: int, color: discord.Colour, reason: str, punishment: str):
+        super().__init__(title="Warning Alert", color=color)
+        
+        self.description = f"**Warnings** - {warn_number}\n**Reason** - {reason}\n**Punishment** - {punishment}"
+        self.set_footer(text="Be careful around the server")

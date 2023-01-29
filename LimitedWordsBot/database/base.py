@@ -31,13 +31,11 @@ class Base:
     async def prison_check(self):
         while True:
             await asyncio.sleep(60)
-            print(colored("System: ", "red") + colored("Prison check on going..", "green"))
 
             for prisoner, data in self.prisoners.items():
                 if data["time"] <= time():
                     await self.release_prisoner(prisoner)
 
-            print(colored("System: ", "red") + colored("Prison check complete!", "green"))
     
     def update_now(self):
         def update():
@@ -52,7 +50,7 @@ class Base:
                     doc_ref.set(dat)
             
             for prisoner, data in self.prisoners.items():
-                    doc_ref = self.db.collections('prisoners').document(str(prisoner.id))
+                    doc_ref = self.db.collection('prisoners').document(str(prisoner.id))
 
                     if doc_ref.get().exists:
                         doc_ref.update(data)
