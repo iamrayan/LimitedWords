@@ -20,12 +20,6 @@ cooldowns = {}
 
 bot = commands.Bot("!", intents=discord.Intents.all(), case_insensitive=True, help_command=None)
 
-help_commands = {
-    "help": "`Shows this commands`",
-    "daily": "`You can run this command once in 24 hours. If you don't do it within 48 hours, your current streak will be gone`",
-    "monke (words)": "`Gamble up some words to see if monke gives you double the words or none`"
-}
-
 basic_roles = [1054323884490493962, 1054324109972086804, 1054324225843937290, 1054324297495232582]
 
 prison_chat_id = 1046101755999563887
