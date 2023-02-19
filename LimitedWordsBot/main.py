@@ -48,6 +48,7 @@ async def on_ready():
 
     print(colored("System: ", "blue") + colored("Bot is Online!", "green"))
 
+    
 @bot.event
 async def on_invite_create(invite: discord.Invite):
     my_base.links[invite.code] = invite
