@@ -212,4 +212,4 @@ async def word_check(ctx: discord.Message):
     print(colored("Dizzy: ", "blue") + colored("New message sent!", "green"))
 
 
-bot.run("MTAzOTQ2OTYwMTUzODQ0MTIyNg.Gz99BS.1mafLZub4gOKYoe675iYeIIltjaJvx9t8z7P4E")
+bot.run("removed")
